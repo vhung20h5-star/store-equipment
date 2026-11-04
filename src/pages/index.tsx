@@ -9,6 +9,9 @@ import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { QuickViewModal } from "@/components/QuickViewModal";
+import { CheckoutModal } from "@/components/CheckoutModal";
+import { OrderLookupModal } from "@/components/OrderLookupModal";
+import { AuthModal } from "@/components/AuthModal";
 import { ToastContainer } from "@/components/ToastContainer";
 
 export default function IndexPage() {
@@ -47,6 +50,9 @@ export default function IndexPage() {
       {/* Interactive Drawers & Overlays */}
       <CartDrawer />
       <QuickViewModal />
+      <CheckoutModal />
+      <OrderLookupModal />
+      <AuthModal />
       <ToastContainer />
     </div>
   );

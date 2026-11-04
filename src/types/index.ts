@@ -80,3 +80,133 @@ export interface PageResponse<T> {
   totalPages: number;
   last: boolean;
 }
+
+export interface FlashSalePromotion {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  endTime: string;
+  featuredProduct?: Product;
+}
+
+export interface ValidatePromotionResult {
+  code: string;
+  valid: boolean;
+  discountPercent: number;
+  maxDiscountAmount?: number;
+  message: string;
+}
+
+export interface NewsletterResponse {
+  email: string;
+  voucherCode: string;
+  alreadySubscribed: boolean;
+  message: string;
+}
+
+export type PaymentMethod = "COD" | "BANK_TRANSFER";
+export type PaymentStatus = "PENDING" | "PAID" | "REFUNDED";
+export type OrderStatus =
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+
+export interface OrderItemRequest {
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateOrderRequest {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  shippingAddress: string;
+  notes?: string;
+  paymentMethod?: PaymentMethod;
+  couponCode?: string;
+  items: OrderItemRequest[];
+}
+
+export interface OrderItemResponse {
+  id: number;
+  productId: string;
+  productName: string;
+  productImage: string;
+  price: number;
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface OrderResponse {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  customerEmail?: string;
+  customerPhone: string;
+  shippingAddress: string;
+  notes?: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  orderStatus: OrderStatus;
+  subtotalAmount: number;
+  discountAmount: number;
+  shippingFee: number;
+  totalAmount: number;
+  couponCode?: string;
+  createdAt: string;
+  items: OrderItemResponse[];
+}
+
+export interface User {
+  id: number;
+  email: string;
+  fullName: string;
+  phone?: string;
+  address?: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface UpdateProfileRequest {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface ServerCartItem {
+  id: number;
+  product: Product;
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface ServerCartResponse {
+  items: ServerCartItem[];
+  totalItems: number;
+  totalPrice: number;
+}
+
+
+

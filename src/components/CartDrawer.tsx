@@ -8,26 +8,21 @@ export const CartDrawer: React.FC = () => {
   const {
     isCartOpen,
     setIsCartOpen,
+    setIsCheckoutOpen,
     cart,
     updateQuantity,
     removeFromCart,
     clearCart,
     totalCartPrice,
     totalCartItems,
-    showToast,
   } = useShop();
 
   if (!isCartOpen) return null;
 
   const handleCheckout = () => {
     if (cart.length === 0) return;
-    showToast(
-      "Đặt hàng thử nghiệm thành công!",
-      `Cảm ơn bạn đã mua ${totalCartItems} sản phẩm tại HomeNest.`,
-      "success",
-    );
-    clearCart();
     setIsCartOpen(false);
+    setIsCheckoutOpen(true);
   };
 
   const formatPrice = (val: number) => {
