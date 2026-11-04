@@ -80,3 +80,29 @@ export interface PageResponse<T> {
   totalPages: number;
   last: boolean;
 }
+
+export interface FlashSalePromotion {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  endTime: string;
+  featuredProduct?: Product;
+}
+
+export interface ValidatePromotionResult {
+  code: string;
+  valid: boolean;
+  discountPercent: number;
+  maxDiscountAmount?: number;
+  message: string;
+}
+
+export interface NewsletterResponse {
+  email: string;
+  voucherCode: string;
+  alreadySubscribed: boolean;
+  message: string;
+}
+

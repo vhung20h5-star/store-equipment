@@ -1,4 +1,13 @@
-import { Category, Product, ApiResponse, PageResponse } from "@/types";
+import {
+  Category,
+  Product,
+  ApiResponse,
+  PageResponse,
+  Testimonial,
+  FlashSalePromotion,
+  ValidatePromotionResult,
+  NewsletterResponse,
+} from "@/types";
 
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string) ||
@@ -158,3 +167,76 @@ export async function fetchBestsellers(): Promise<Product[]> {
     throw new ApiError("Không thể tải danh sách sản phẩm bán chạy.");
   }
 }
+
+export async function fetchFlashSale(): Promise<FlashSalePromotion> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/promotions/flash-sale`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    return await handleResponse<FlashSalePromotion>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tải thông tin khuyến mãi Flash Sale.");
+  }
+}
+
+export async function validatePromotionCode(
+  code: string,
+): Promise<ValidatePromotionResult> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/promotions/validate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    return await handleResponse<ValidatePromotionResult>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể kiểm tra mã giảm giá.");
+  }
+}
+
+export async function fetchTestimonials(): Promise<Testimonial[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/testimonials`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    return await handleResponse<Testimonial[]>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tải đánh giá từ khách hàng.");
+  }
+}
+
+export async function subscribeNewsletter(
+  email: string,
+): Promise<NewsletterResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    return await handleResponse<NewsletterResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể gửi thông tin đăng ký nhận tin.");
+  }
+}
+

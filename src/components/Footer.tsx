@@ -8,17 +8,21 @@ import {
   ShieldCheck,
   CreditCard,
   CheckCircle2,
+  RefreshCw,
 } from "lucide-react";
 
 import { useShop } from "@/context/ShopContext";
+import { subscribeNewsletter } from "@/services/api";
 
 export const Footer: React.FC = () => {
   const { showToast } = useShop();
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [voucherCode, setVoucherCode] = useState("HOMENEST10");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -36,13 +40,29 @@ export const Footer: React.FC = () => {
       return;
     }
 
-    setIsSubscribed(true);
-    showToast(
-      "Đăng ký nhận tin thành công!",
-      `Mã ưu đãi 10% đã gửi tới ${email}`,
-      "success",
-    );
-    setEmail("");
+    setIsSubmitting(true);
+    try {
+      const res = await subscribeNewsletter(email);
+      setIsSubscribed(true);
+      if (res.voucherCode) {
+        setVoucherCode(res.voucherCode);
+      }
+      showToast(
+        res.alreadySubscribed
+          ? "Đã ghi nhận thông tin!"
+          : "Đăng ký nhận tin thành công!",
+        res.message || `Mã ưu đãi 10% của bạn: ${res.voucherCode || voucherCode}`,
+        "success",
+      );
+      setEmail("");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Đăng ký không thành công";
+      setError(msg);
+      showToast("Lỗi đăng ký", msg, "warning");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollTo = (e: React.MouseEvent, id: string) => {
@@ -266,11 +286,19 @@ export const Footer: React.FC = () => {
             </p>
 
             {isSubscribed ? (
-              <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-                <span>
-                  Cảm ơn bạn! Chúng tôi đã lưu thông tin đăng ký của bạn.
-                </span>
+              <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex flex-col gap-1.5">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                  <span className="font-semibold">
+                    Cảm ơn bạn đã đăng ký nhận tin!
+                  </span>
+                </div>
+                <p className="text-slate-300 pl-6">
+                  Mã ưu đãi 10% của bạn:{" "}
+                  <span className="font-mono font-bold text-emerald-400">
+                    {voucherCode}
+                  </span>
+                </p>
               </div>
             ) : (
               <form className="space-y-2" onSubmit={handleSubscribe}>
@@ -278,6 +306,7 @@ export const Footer: React.FC = () => {
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
                   <input
                     className="w-full pl-9 pr-28 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 outline-none focus:border-emerald-500 transition-all"
+                    disabled={isSubmitting}
                     placeholder="Nhập email của bạn..."
                     type="email"
                     value={email}
@@ -287,11 +316,16 @@ export const Footer: React.FC = () => {
                     }}
                   />
                   <button
-                    className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                    className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                    disabled={isSubmitting}
                     type="submit"
                   >
-                    <span>Đăng ký</span>
-                    <Send className="w-3 h-3" />
+                    <span>{isSubmitting ? "Đang gửi..." : "Đăng ký"}</span>
+                    {isSubmitting ? (
+                      <RefreshCw className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Send className="w-3 h-3" />
+                    )}
                   </button>
                 </div>
                 {error && <p className="text-[11px] text-rose-400">{error}</p>}
