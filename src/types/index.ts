@@ -161,4 +161,52 @@ export interface OrderResponse {
   items: OrderItemResponse[];
 }
 
+export interface User {
+  id: number;
+  email: string;
+  fullName: string;
+  phone?: string;
+  address?: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface UpdateProfileRequest {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface ServerCartItem {
+  id: number;
+  product: Product;
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface ServerCartResponse {
+  items: ServerCartItem[];
+  totalItems: number;
+  totalPrice: number;
+}
+
+
 

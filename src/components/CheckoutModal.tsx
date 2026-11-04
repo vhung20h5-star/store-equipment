@@ -29,6 +29,7 @@ export const CheckoutModal: React.FC = () => {
     showToast,
     totalCartPrice,
     totalCartItems,
+    currentUser,
   } = useShop();
 
   // Form states
@@ -38,6 +39,16 @@ export const CheckoutModal: React.FC = () => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
+
+  // Auto-fill from logged in user
+  React.useEffect(() => {
+    if (currentUser && isCheckoutOpen) {
+      if (currentUser.fullName) setCustomerName(currentUser.fullName);
+      if (currentUser.phone) setCustomerPhone(currentUser.phone);
+      if (currentUser.email) setCustomerEmail(currentUser.email);
+      if (currentUser.address) setShippingAddress(currentUser.address);
+    }
+  }, [currentUser, isCheckoutOpen]);
 
   // Voucher states
   const [couponInput, setCouponInput] = useState("");

@@ -9,11 +9,50 @@ import {
   NewsletterResponse,
   CreateOrderRequest,
   OrderResponse,
+  User,
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  UpdateProfileRequest,
+  ServerCartResponse,
 } from "@/types";
 
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string) ||
   "http://localhost:8080/api/v1";
+
+export function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem("homenest_token");
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string | null): void {
+  try {
+    if (token) {
+      localStorage.setItem("homenest_token", token);
+    } else {
+      localStorage.removeItem("homenest_token");
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function getAuthHeaders(
+  extraHeaders: Record<string, string> = {},
+): Record<string, string> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = { ...extraHeaders };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
 
 export class ApiError extends Error {
   status?: number;
@@ -303,5 +342,210 @@ export async function lookupOrdersByPhone(
     throw new ApiError("Không thể tra cứu đơn hàng theo số điện thoại.");
   }
 }
+
+// ===== Authentication APIs =====
+
+export async function loginApi(data: LoginRequest): Promise<AuthResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const authRes = await handleResponse<AuthResponse>(res);
+
+    setAuthToken(authRes.token);
+
+    return authRes;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+  }
+}
+
+export async function registerApi(
+  data: RegisterRequest,
+): Promise<AuthResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const authRes = await handleResponse<AuthResponse>(res);
+
+    setAuthToken(authRes.token);
+
+    return authRes;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Đăng ký tài khoản không thành công.");
+  }
+}
+
+export async function fetchCurrentUser(): Promise<User> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: "GET",
+      headers: getAuthHeaders({
+        Accept: "application/json",
+      }),
+    });
+
+    return await handleResponse<User>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể lấy thông tin tài khoản.");
+  }
+}
+
+export async function updateProfileApi(
+  data: UpdateProfileRequest,
+): Promise<User> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/profile`, {
+      method: "PUT",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }),
+      body: JSON.stringify(data),
+    });
+
+    return await handleResponse<User>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể cập nhật hồ sơ người dùng.");
+  }
+}
+
+// ===== Server Persistent Cart APIs =====
+
+export async function fetchServerCart(): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/cart`, {
+      method: "GET",
+      headers: getAuthHeaders({
+        Accept: "application/json",
+      }),
+    });
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tải giỏ hàng từ máy chủ.");
+  }
+}
+
+export async function addServerCartItem(
+  productId: string,
+  quantity = 1,
+): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/cart/items`, {
+      method: "POST",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }),
+      body: JSON.stringify({ productId, quantity }),
+    });
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể thêm sản phẩm vào giỏ hàng trên máy chủ.");
+  }
+}
+
+export async function updateServerCartItem(
+  productId: string,
+  quantity: number,
+): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/cart/items/${encodeURIComponent(productId)}`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+        body: JSON.stringify({ quantity }),
+      },
+    );
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể cập nhật giỏ hàng trên máy chủ.");
+  }
+}
+
+export async function removeServerCartItem(
+  productId: string,
+): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/cart/items/${encodeURIComponent(productId)}`,
+      {
+        method: "DELETE",
+        headers: getAuthHeaders({
+          Accept: "application/json",
+        }),
+      },
+    );
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể xóa sản phẩm khỏi giỏ hàng trên máy chủ.");
+  }
+}
+
+export async function clearServerCart(): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/cart`, {
+      method: "DELETE",
+      headers: getAuthHeaders({
+        Accept: "application/json",
+      }),
+    });
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể làm trống giỏ hàng trên máy chủ.");
+  }
+}
+
+export async function syncServerCart(
+  items: { productId: string; quantity: number }[],
+): Promise<ServerCartResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/cart/sync`, {
+      method: "POST",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }),
+      body: JSON.stringify({ items }),
+    });
+
+    return await handleResponse<ServerCartResponse>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể đồng bộ giỏ hàng lên máy chủ.");
+  }
+}
+
 
 
