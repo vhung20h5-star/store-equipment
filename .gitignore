@@ -27,3 +27,16 @@ pnpm-lock.yaml
 yarn.lock
 package-lock.json
 bun.lockb
+
+# Environment files (never commit real secrets)
+.env
+.env.*
+!.env.example
+
+# Backend build artifacts & Maven target
+backend/target/
+**/target/
+*.class
+
+# Graphify / AI tool outputs
+graphify-out/
