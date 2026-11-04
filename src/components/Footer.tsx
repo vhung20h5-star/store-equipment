@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useShop } from "@/context/ShopContext";
 import {
   Home,
   Mail,
@@ -10,6 +9,8 @@ import {
   CreditCard,
   CheckCircle2,
 } from "lucide-react";
+
+import { useShop } from "@/context/ShopContext";
 
 export const Footer: React.FC = () => {
   const { showToast } = useShop();
@@ -23,12 +24,15 @@ export const Footer: React.FC = () => {
 
     if (!email.trim()) {
       setError("Vui lòng nhập địa chỉ email của bạn.");
+
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       setError("Địa chỉ email không đúng định dạng.");
+
       return;
     }
 
@@ -44,6 +48,7 @@ export const Footer: React.FC = () => {
   const scrollTo = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     const el = document.getElementById(id);
+
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -65,7 +70,8 @@ export const Footer: React.FC = () => {
 
             <p className="text-sm text-slate-400 leading-relaxed pr-4">
               HomeNest là điểm đến tin cậy cho các thiết bị gia dụng hiện đại,
-              tích hợp công nghệ thông minh nhằm mang lại cuộc sống tiện nghi, an toàn và hạnh phúc cho mọi tổ ấm.
+              tích hợp công nghệ thông minh nhằm mang lại cuộc sống tiện nghi,
+              an toàn và hạnh phúc cho mọi tổ ấm.
             </p>
 
             <div className="space-y-2 text-xs text-slate-400 pt-2">
@@ -88,12 +94,16 @@ export const Footer: React.FC = () => {
               {["Facebook", "Instagram", "TikTok", "YouTube"].map((network) => (
                 <a
                   key={network}
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-xs font-medium text-slate-300 hover:text-white transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Mạng xã hội", `Liên kết đến ${network} chính thức`, "info");
+                    showToast(
+                      "Mạng xã hội",
+                      `Liên kết đến ${network} chính thức`,
+                      "info",
+                    );
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-xs font-medium text-slate-300 hover:text-white transition-colors"
                 >
                   {network}
                 </a>
@@ -109,45 +119,45 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-xs sm:text-sm">
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#hero"
                   onClick={(e) => scrollTo(e, "hero")}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Trang chủ
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#categories"
                   onClick={(e) => scrollTo(e, "categories")}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Danh mục sản phẩm
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#products"
                   onClick={(e) => scrollTo(e, "products")}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Sản phẩm bán chạy
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#promotions"
                   onClick={(e) => scrollTo(e, "promotions")}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Khuyến mãi Flash Sale
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#about"
                   onClick={(e) => scrollTo(e, "about")}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Về chúng tôi
                 </a>
@@ -163,60 +173,80 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-xs sm:text-sm">
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Chính sách bảo hành", "Bảo hành 24 tháng chính hãng toàn diện", "info");
+                    showToast(
+                      "Chính sách bảo hành",
+                      "Bảo hành 24 tháng chính hãng toàn diện",
+                      "info",
+                    );
                   }}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Chính sách bảo hành 24 tháng
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Chính sách đổi trả", "Đổi mới trong 30 ngày nếu phát sinh lỗi kỹ thuật", "info");
+                    showToast(
+                      "Chính sách đổi trả",
+                      "Đổi mới trong 30 ngày nếu phát sinh lỗi kỹ thuật",
+                      "info",
+                    );
                   }}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Chính sách đổi trả 30 ngày
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Giao hàng", "Miễn phí giao hàng toàn quốc đơn từ 500k", "info");
+                    showToast(
+                      "Giao hàng",
+                      "Miễn phí giao hàng toàn quốc đơn từ 500k",
+                      "info",
+                    );
                   }}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Chính sách vận chuyển
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Bảo mật", "Cam kết bảo mật thông tin khách hàng tuyệt đối", "info");
+                    showToast(
+                      "Bảo mật",
+                      "Cam kết bảo mật thông tin khách hàng tuyệt đối",
+                      "info",
+                    );
                   }}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Chính sách bảo mật
                 </a>
               </li>
               <li>
                 <a
+                  className="hover:text-emerald-400 transition-colors"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast("Hướng dẫn", "Hỗ trợ lắp đặt và hướng dẫn sử dụng tận nơi", "info");
+                    showToast(
+                      "Hướng dẫn",
+                      "Hỗ trợ lắp đặt và hướng dẫn sử dụng tận nơi",
+                      "info",
+                    );
                   }}
-                  className="hover:text-emerald-400 transition-colors"
                 >
                   Hướng dẫn sử dụng thiết bị
                 </a>
@@ -230,31 +260,35 @@ export const Footer: React.FC = () => {
               Đăng ký nhận tin & Nhận voucher 10%
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Nhận thông báo sớm nhất về các chương trình ưu đãi độc quyền, bí quyết chăm sóc nhà cửa và các sản phẩm công nghệ gia dụng mới nhất.
+              Nhận thông báo sớm nhất về các chương trình ưu đãi độc quyền, bí
+              quyết chăm sóc nhà cửa và các sản phẩm công nghệ gia dụng mới
+              nhất.
             </p>
 
             {isSubscribed ? (
               <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-                <span>Cảm ơn bạn! Chúng tôi đã lưu thông tin đăng ký của bạn.</span>
+                <span>
+                  Cảm ơn bạn! Chúng tôi đã lưu thông tin đăng ký của bạn.
+                </span>
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="space-y-2">
+              <form className="space-y-2" onSubmit={handleSubscribe}>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
                   <input
-                    type="email"
+                    className="w-full pl-9 pr-28 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 outline-none focus:border-emerald-500 transition-all"
                     placeholder="Nhập email của bạn..."
+                    type="email"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
                       if (error) setError("");
                     }}
-                    className="w-full pl-9 pr-28 py-2.5 text-xs sm:text-sm rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 outline-none focus:border-emerald-500 transition-all"
                   />
                   <button
-                    type="submit"
                     className="absolute right-1.5 top-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                    type="submit"
                   >
                     <span>Đăng ký</span>
                     <Send className="w-3 h-3" />
@@ -266,10 +300,12 @@ export const Footer: React.FC = () => {
 
             <div className="pt-2 text-slate-400 text-xs flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Thanh toán an toàn
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Thanh toán
+                an toàn
               </span>
               <span className="flex items-center gap-1">
-                <CreditCard className="w-4 h-4 text-emerald-400" /> Visa / Master / MoMo
+                <CreditCard className="w-4 h-4 text-emerald-400" /> Visa /
+                Master / MoMo
               </span>
             </div>
           </div>
@@ -277,11 +313,18 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Copyright Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>© 2026 HomeNest. All rights reserved. Thiết kế cho giao diện thương mại điện tử hiện đại.</p>
+          <p>
+            © 2026 HomeNest. All rights reserved. Thiết kế cho giao diện thương
+            mại điện tử hiện đại.
+          </p>
           <div className="flex items-center gap-4">
-            <span className="hover:text-slate-300 cursor-pointer">Điều khoản dịch vụ</span>
+            <span className="hover:text-slate-300 cursor-pointer">
+              Điều khoản dịch vụ
+            </span>
             <span>•</span>
-            <span className="hover:text-slate-300 cursor-pointer">Quy chế hoạt động</span>
+            <span className="hover:text-slate-300 cursor-pointer">
+              Quy chế hoạt động
+            </span>
             <span>•</span>
             <span className="hover:text-slate-300 cursor-pointer">Sitemap</span>
           </div>

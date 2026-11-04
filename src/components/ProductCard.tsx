@@ -1,15 +1,17 @@
 import React from "react";
-import { Product } from "@/types";
-import { useShop } from "@/context/ShopContext";
 import { Button } from "@heroui/react";
 import { Star, Heart, ShoppingBag, Eye } from "lucide-react";
+
+import { Product } from "@/types";
+import { useShop } from "@/context/ShopContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct } =
+    useShop();
 
   const isFav = isInWishlist(product.id);
 
@@ -40,10 +42,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Top Image Container */}
       <div className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-700/50">
         <img
-          src={product.image}
           alt={product.name}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          src={product.image}
         />
 
         {/* Badges */}
@@ -64,16 +66,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Wishlist Button */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleWishlist(product.id);
-          }}
+          aria-label="Yêu thích"
           className={`absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md shadow-md transition-all duration-200 ${
             isFav
               ? "bg-rose-50 dark:bg-rose-950/80 text-rose-500"
               : "bg-white/90 dark:bg-slate-800/90 text-slate-400 hover:text-rose-500"
           }`}
-          aria-label="Yêu thích"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
         >
           <Heart
             className={`w-4 h-4 transition-transform active:scale-125 ${
@@ -85,8 +87,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Quick View Button (hover overlay) */}
         <div className="absolute inset-x-0 bottom-3 px-4 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none group-hover:pointer-events-auto">
           <button
-            onClick={() => setQuickViewProduct(product)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md shadow-lg transition-transform hover:scale-105"
+            onClick={() => setQuickViewProduct(product)}
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Xem nhanh</span>
@@ -104,9 +106,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Title */}
           <h3
-            onClick={() => setQuickViewProduct(product)}
             className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 mt-1 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
             title={product.name}
+            onClick={() => setQuickViewProduct(product)}
           >
             {product.name}
           </h3>
@@ -151,4 +153,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </div>
   );
 };
-

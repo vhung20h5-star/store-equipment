@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Navbar } from "@/components/Navbar";
 
 export default function DefaultLayout({
@@ -9,9 +10,7 @@ export default function DefaultLayout({
   return (
     <div className="relative flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow">
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
     </div>
   );
 }

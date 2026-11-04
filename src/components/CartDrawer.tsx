@@ -1,7 +1,8 @@
 import React from "react";
-import { useShop } from "@/context/ShopContext";
 import { Button } from "@heroui/react";
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react";
+
+import { useShop } from "@/context/ShopContext";
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -58,9 +59,9 @@ export const CartDrawer: React.FC = () => {
             </span>
           </div>
           <button
-            onClick={() => setIsCartOpen(false)}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Đóng giỏ hàng"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            onClick={() => setIsCartOpen(false)}
           >
             <X className="w-5 h-5" />
           </button>
@@ -77,13 +78,15 @@ export const CartDrawer: React.FC = () => {
                 Giỏ hàng đang trống
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-6">
-                Chưa có sản phẩm nào trong giỏ hàng. Khám phá các thiết bị gia dụng thông minh ngay hôm nay!
+                Chưa có sản phẩm nào trong giỏ hàng. Khám phá các thiết bị gia
+                dụng thông minh ngay hôm nay!
               </p>
               <Button
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2 rounded-full cursor-pointer transition-colors"
                 onPress={() => {
                   setIsCartOpen(false);
                   const el = document.getElementById("products");
+
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
               >
@@ -97,9 +100,9 @@ export const CartDrawer: React.FC = () => {
                 className="flex gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 transition-all hover:border-emerald-200 dark:hover:border-emerald-800/50"
               >
                 <img
-                  src={item.product.image}
                   alt={item.product.name}
                   className="w-20 h-20 object-cover rounded-lg shrink-0 border border-slate-200 dark:border-slate-700"
+                  src={item.product.image}
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
@@ -115,11 +118,11 @@ export const CartDrawer: React.FC = () => {
                     {/* Quantity controls */}
                     <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900">
                       <button
+                        aria-label="Giảm số lượng"
+                        className="p-1 hover:text-emerald-600 text-slate-500 transition-colors"
                         onClick={() =>
                           updateQuantity(item.product.id, item.quantity - 1)
                         }
-                        className="p-1 hover:text-emerald-600 text-slate-500 transition-colors"
-                        aria-label="Giảm số lượng"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
@@ -127,11 +130,11 @@ export const CartDrawer: React.FC = () => {
                         {item.quantity}
                       </span>
                       <button
+                        aria-label="Tăng số lượng"
+                        className="p-1 hover:text-emerald-600 text-slate-500 transition-colors"
                         onClick={() =>
                           updateQuantity(item.product.id, item.quantity + 1)
                         }
-                        className="p-1 hover:text-emerald-600 text-slate-500 transition-colors"
-                        aria-label="Tăng số lượng"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -139,9 +142,9 @@ export const CartDrawer: React.FC = () => {
 
                     {/* Delete button */}
                     <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors p-1"
                       aria-label="Xóa sản phẩm"
+                      className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors p-1"
+                      onClick={() => removeFromCart(item.product.id)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -185,8 +188,8 @@ export const CartDrawer: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <button
-                onClick={clearCart}
                 className="text-xs text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 text-center py-1 transition-colors"
+                onClick={clearCart}
               >
                 Xóa tất cả sản phẩm
               </button>
@@ -197,4 +200,3 @@ export const CartDrawer: React.FC = () => {
     </div>
   );
 };
-
