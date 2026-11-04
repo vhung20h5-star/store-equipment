@@ -1,0 +1,168 @@
+import React, { useState, useEffect } from "react";
+import { useShop } from "@/context/ShopContext";
+import { Button } from "@heroui/react";
+import { Flame, Clock, Copy, Check, ArrowRight } from "lucide-react";
+
+export const PromoSection: React.FC = () => {
+  const { showToast } = useShop();
+  const [copied, setCopied] = useState(false);
+
+  // Countdown timer state
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 14,
+    minutes: 36,
+    seconds: 45,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        } else {
+          return { hours: 24, minutes: 0, seconds: 0 };
+        }
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText("HOMENEST30");
+    setCopied(true);
+    showToast("Đã sao chép mã!", "Mã HOMENEST30 giảm 30% đã sẵn sàng.", "success");
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const scrollToProducts = () => {
+    const el = document.getElementById("products");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <section id="promotions" className="py-16 sm:py-24 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-900 via-slate-900 to-teal-950 text-white shadow-2xl border border-emerald-800/40 p-8 sm:p-12 lg:p-16">
+          {/* Subtle Background Glows */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Content (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-300 text-xs sm:text-sm font-bold uppercase tracking-wider">
+                <Flame className="w-4 h-4 text-orange-400 fill-orange-400" />
+                <span>Flash Sale Có Hạn – Giảm Đến 30%</span>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                Ưu đãi đặc biệt dành cho{" "}
+                <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-orange-400 bg-clip-text text-transparent">
+                  ngôi nhà của bạn
+                </span>
+              </h2>
+
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                Cơ hội sở hữu trọn bộ thiết bị gia dụng nhà bếp, robot lau dọn thông minh và máy lọc không khí cao cấp với mức giá tốt nhất trong tháng.
+              </p>
+
+              {/* Countdown Timer */}
+              <div className="pt-2">
+                <p className="text-xs uppercase font-semibold text-slate-400 tracking-wider flex items-center gap-1.5 mb-3">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                  <span>Thời gian ưu đãi kết thúc sau:</span>
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                      {String(timeLeft.hours).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">Giờ</span>
+                  </div>
+                  <span className="text-2xl font-bold text-slate-400">:</span>
+                  <div className="flex flex-col items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                      {String(timeLeft.minutes).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">Phút</span>
+                  </div>
+                  <span className="text-2xl font-bold text-slate-400">:</span>
+                  <div className="flex flex-col items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
+                      {String(timeLeft.seconds).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">Giây</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Voucher Code Box & CTA */}
+              <div className="flex flex-wrap items-center gap-4 pt-3">
+                {/* Copy Voucher */}
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+                  <span className="text-xs text-slate-300">Mã giảm:</span>
+                  <span className="font-mono font-bold text-emerald-300 text-sm tracking-wider">
+                    HOMENEST30
+                  </span>
+                  <button
+                    onClick={handleCopyCode}
+                    className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors ml-1 cursor-pointer"
+                    title="Sao chép mã"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Primary CTA */}
+                <Button
+                  className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-7 py-3 rounded-full flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/30 transition-all hover:scale-102"
+                  onPress={scrollToProducts}
+                >
+                  <span>Mua ngay kẻo lỡ</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Visual Image (5 cols) */}
+            <div className="lg:col-span-5 relative flex justify-center">
+              <div className="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-2 border-white/20 group">
+                <img
+                  src="https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80"
+                  alt="Nồi chiên không dầu cao cấp ưu đãi đặc biệt"
+                  className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-rose-600 text-white font-extrabold text-sm shadow-md">
+                  Giảm 31%
+                </div>
+                <div className="absolute bottom-5 left-5 right-5">
+                  <p className="text-xs uppercase text-emerald-400 font-semibold tracking-wider">
+                    Sản phẩm tiêu biểu
+                  </p>
+                  <p className="text-base font-bold text-white">
+                    Nồi chiên không dầu DualZone 6.5L
+                  </p>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Chỉ từ 1.990.000đ (Giá gốc: 2.890.000đ)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
