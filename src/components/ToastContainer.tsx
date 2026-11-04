@@ -1,6 +1,7 @@
 import React from "react";
-import { useShop } from "@/context/ShopContext";
 import { CheckCircle2, Info, AlertTriangle, X } from "lucide-react";
+
+import { useShop } from "@/context/ShopContext";
 
 export const ToastContainer: React.FC = () => {
   const { toasts, removeToast } = useShop();
@@ -38,7 +39,9 @@ export const ToastContainer: React.FC = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold leading-tight">{toast.title}</p>
+              <p className="text-sm font-semibold leading-tight">
+                {toast.title}
+              </p>
               {toast.description && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
                   {toast.description}
@@ -47,9 +50,9 @@ export const ToastContainer: React.FC = () => {
             </div>
 
             <button
-              onClick={() => removeToast(toast.id)}
-              className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
               aria-label="Đóng thông báo"
+              className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
+              onClick={() => removeToast(toast.id)}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -59,4 +62,3 @@ export const ToastContainer: React.FC = () => {
     </div>
   );
 };
-

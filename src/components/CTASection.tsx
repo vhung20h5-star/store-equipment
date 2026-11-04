@@ -5,6 +5,7 @@ import { ArrowRight, ShoppingBag, Grid } from "lucide-react";
 export const CTASection: React.FC = () => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
+
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -33,7 +34,9 @@ export const CTASection: React.FC = () => {
             </h2>
 
             <p className="text-slate-200 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
-              Khám phá bộ sưu tập thiết bị gia dụng hiện đại, chất lượng vượt trội và dịch vụ tận tâm tại HomeNest. Nâng tầm phong cách sống cho cả gia đình.
+              Khám phá bộ sưu tập thiết bị gia dụng hiện đại, chất lượng vượt
+              trội và dịch vụ tận tâm tại HomeNest. Nâng tầm phong cách sống cho
+              cả gia đình.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -47,8 +50,8 @@ export const CTASection: React.FC = () => {
               </Button>
 
               <button
-                onClick={() => scrollTo("categories")}
                 className="px-7 py-3.5 rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-md transition-all flex items-center gap-2 cursor-pointer hover:scale-105"
+                onClick={() => scrollTo("categories")}
               >
                 <Grid className="w-4 h-4" />
                 <span>Khám phá danh mục</span>
@@ -60,4 +63,3 @@ export const CTASection: React.FC = () => {
     </section>
   );
 };
-

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useShop } from "@/context/ShopContext";
 import { Button } from "@heroui/react";
 import { Flame, Clock, Copy, Check, ArrowRight } from "lucide-react";
+
+import { useShop } from "@/context/ShopContext";
 
 export const PromoSection: React.FC = () => {
   const { showToast } = useShop();
@@ -28,23 +29,29 @@ export const PromoSection: React.FC = () => {
         }
       });
     }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText("HOMENEST30");
     setCopied(true);
-    showToast("Đã sao chép mã!", "Mã HOMENEST30 giảm 30% đã sẵn sàng.", "success");
+    showToast(
+      "Đã sao chép mã!",
+      "Mã HOMENEST30 giảm 30% đã sẵn sàng.",
+      "success",
+    );
     setTimeout(() => setCopied(false), 2500);
   };
 
   const scrollToProducts = () => {
     const el = document.getElementById("products");
+
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section id="promotions" className="py-16 sm:py-24 overflow-hidden">
+    <section className="py-16 sm:py-24 overflow-hidden" id="promotions">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-900 via-slate-900 to-teal-950 text-white shadow-2xl border border-emerald-800/40 p-8 sm:p-12 lg:p-16">
           {/* Subtle Background Glows */}
@@ -69,7 +76,9 @@ export const PromoSection: React.FC = () => {
               </h2>
 
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
-                Cơ hội sở hữu trọn bộ thiết bị gia dụng nhà bếp, robot lau dọn thông minh và máy lọc không khí cao cấp với mức giá tốt nhất trong tháng.
+                Cơ hội sở hữu trọn bộ thiết bị gia dụng nhà bếp, robot lau dọn
+                thông minh và máy lọc không khí cao cấp với mức giá tốt nhất
+                trong tháng.
               </p>
 
               {/* Countdown Timer */}
@@ -83,21 +92,27 @@ export const PromoSection: React.FC = () => {
                     <span className="text-2xl sm:text-3xl font-extrabold text-white">
                       {String(timeLeft.hours).padStart(2, "0")}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-slate-300">Giờ</span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">
+                      Giờ
+                    </span>
                   </div>
                   <span className="text-2xl font-bold text-slate-400">:</span>
                   <div className="flex flex-col items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
                     <span className="text-2xl sm:text-3xl font-extrabold text-white">
                       {String(timeLeft.minutes).padStart(2, "0")}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-slate-300">Phút</span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">
+                      Phút
+                    </span>
                   </div>
                   <span className="text-2xl font-bold text-slate-400">:</span>
                   <div className="flex flex-col items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
                     <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
                       {String(timeLeft.seconds).padStart(2, "0")}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-slate-300">Giây</span>
+                    <span className="text-[10px] sm:text-xs text-slate-300">
+                      Giây
+                    </span>
                   </div>
                 </div>
               </div>
@@ -111,9 +126,9 @@ export const PromoSection: React.FC = () => {
                     HOMENEST30
                   </span>
                   <button
-                    onClick={handleCopyCode}
                     className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors ml-1 cursor-pointer"
                     title="Sao chép mã"
+                    onClick={handleCopyCode}
                   >
                     {copied ? (
                       <Check className="w-4 h-4 text-emerald-400" />
@@ -138,9 +153,9 @@ export const PromoSection: React.FC = () => {
             <div className="lg:col-span-5 relative flex justify-center">
               <div className="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-2 border-white/20 group">
                 <img
-                  src="https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80"
                   alt="Nồi chiên không dầu cao cấp ưu đãi đặc biệt"
                   className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-rose-600 text-white font-extrabold text-sm shadow-md">
@@ -165,4 +180,3 @@ export const PromoSection: React.FC = () => {
     </section>
   );
 };
-

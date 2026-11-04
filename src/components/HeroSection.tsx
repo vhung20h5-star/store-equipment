@@ -13,11 +13,15 @@ import {
 export const HeroSection: React.FC = () => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
+
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section id="hero" className="relative overflow-hidden pt-8 pb-16 lg:pt-16 lg:pb-24">
+    <section
+      className="relative overflow-hidden pt-8 pb-16 lg:pt-16 lg:pb-24"
+      id="hero"
+    >
       {/* Background Subtle Gradient Blobs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-tr from-emerald-100/50 via-teal-50/30 to-amber-100/30 dark:from-emerald-950/20 dark:via-slate-900/10 dark:to-teal-950/20 blur-3xl -z-10 pointer-events-none rounded-full" />
 
@@ -41,8 +45,9 @@ export const HeroSection: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl font-normal">
-              Khám phá những sản phẩm gia dụng hiện đại, tiện nghi và chất lượng,
-              giúp công việc nhà trở nên đơn giản hơn mỗi ngày. Tận hưởng không gian sống đẳng cấp cùng HomeNest.
+              Khám phá những sản phẩm gia dụng hiện đại, tiện nghi và chất
+              lượng, giúp công việc nhà trở nên đơn giản hơn mỗi ngày. Tận hưởng
+              không gian sống đẳng cấp cùng HomeNest.
             </p>
 
             {/* Two CTAs */}
@@ -56,8 +61,8 @@ export const HeroSection: React.FC = () => {
               </Button>
 
               <button
-                onClick={() => scrollTo("promotions")}
                 className="px-6 py-3.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm sm:text-base backdrop-blur-sm transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
+                onClick={() => scrollTo("promotions")}
               >
                 Xem ưu đãi
               </button>
@@ -96,9 +101,9 @@ export const HeroSection: React.FC = () => {
               {/* Main Image */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800 group">
                 <img
-                  src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80"
                   alt="Không gian bếp hiện đại cùng thiết bị gia dụng HomeNest"
                   className="w-full h-[400px] sm:h-[480px] object-cover group-hover:scale-102 transition-transform duration-700"
+                  src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -152,4 +157,3 @@ export const HeroSection: React.FC = () => {
     </section>
   );
 };
-

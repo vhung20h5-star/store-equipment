@@ -1,6 +1,7 @@
 import React from "react";
-import { TESTIMONIALS } from "@/data/mockData";
 import { Star, Quote, Sparkles, CheckCircle2 } from "lucide-react";
+
+import { TESTIMONIALS } from "@/data/mockData";
 
 export const TestimonialsSection: React.FC = () => {
   return (
@@ -16,7 +17,8 @@ export const TestimonialsSection: React.FC = () => {
             Khách hàng nói gì về HomeNest?
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300">
-            Sự tin cậy và niềm vui của hàng chục nghìn gia đình Việt là động lực lớn nhất của chúng tôi mỗi ngày.
+            Sự tin cậy và niềm vui của hàng chục nghìn gia đình Việt là động lực
+            lớn nhất của chúng tôi mỗi ngày.
           </p>
         </div>
 
@@ -52,10 +54,10 @@ export const TestimonialsSection: React.FC = () => {
               {/* Author & Product */}
               <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center gap-3">
                 <img
-                  src={t.avatar}
                   alt={t.name}
                   className="w-12 h-12 rounded-full object-cover border-2 border-emerald-500/30"
                   loading="lazy"
+                  src={t.avatar}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -64,7 +66,9 @@ export const TestimonialsSection: React.FC = () => {
                     </h4>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   </div>
-                  <p className="text-[11px] text-slate-400 truncate">{t.location}</p>
+                  <p className="text-[11px] text-slate-400 truncate">
+                    {t.location}
+                  </p>
                   <p className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 truncate mt-0.5">
                     Đã mua: {t.purchasedProduct}
                   </p>
@@ -76,10 +80,10 @@ export const TestimonialsSection: React.FC = () => {
 
         {/* Note */}
         <p className="mt-8 text-center text-xs text-slate-400 italic">
-          * Đánh giá mẫu phục vụ mục đích minh họa giao diện trải nghiệm người dùng.
+          * Đánh giá mẫu phục vụ mục đích minh họa giao diện trải nghiệm người
+          dùng.
         </p>
       </div>
     </section>
   );
 };
-

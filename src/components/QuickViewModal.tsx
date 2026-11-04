@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { useShop } from "@/context/ShopContext";
 import { Button } from "@heroui/react";
-import { X, Star, Heart, Check, ShoppingBag, ShieldCheck, Truck } from "lucide-react";
+import {
+  X,
+  Star,
+  Heart,
+  Check,
+  ShoppingBag,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
+
+import { useShop } from "@/context/ShopContext";
 
 export const QuickViewModal: React.FC = () => {
   const {
@@ -43,9 +52,9 @@ export const QuickViewModal: React.FC = () => {
       <div className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden z-10 border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 my-8">
         {/* Close Button */}
         <button
-          onClick={() => setQuickViewProduct(null)}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-500 hover:text-slate-800 dark:hover:text-white shadow-sm transition-colors"
           aria-label="Đóng"
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-500 hover:text-slate-800 dark:hover:text-white shadow-sm transition-colors"
+          onClick={() => setQuickViewProduct(null)}
         >
           <X className="w-5 h-5" />
         </button>
@@ -54,9 +63,9 @@ export const QuickViewModal: React.FC = () => {
           {/* Product Image Column */}
           <div className="relative bg-slate-50 dark:bg-slate-800/50 p-8 flex items-center justify-center">
             <img
-              src={quickViewProduct.image}
               alt={quickViewProduct.name}
               className="w-full max-h-80 object-cover rounded-2xl shadow-lg border border-slate-200/60 dark:border-slate-700/60"
+              src={quickViewProduct.image}
             />
             {quickViewProduct.badge && (
               <span className="absolute top-6 left-6 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500 text-white shadow-md">
@@ -121,7 +130,10 @@ export const QuickViewModal: React.FC = () => {
                   Đặc điểm nổi bật:
                 </p>
                 {quickViewProduct.features.map((feat, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                  <div
+                    key={i}
+                    className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300"
+                  >
                     <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>
@@ -131,14 +143,16 @@ export const QuickViewModal: React.FC = () => {
               {/* Specs */}
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 mb-6">
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  {Object.entries(quickViewProduct.specs).map(([key, value]) => (
-                    <div key={key}>
-                      <span className="text-slate-400 block">{key}:</span>
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">
-                        {value}
-                      </span>
-                    </div>
-                  ))}
+                  {Object.entries(quickViewProduct.specs).map(
+                    ([key, value]) => (
+                      <div key={key}>
+                        <span className="text-slate-400 block">{key}:</span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-200">
+                          {value}
+                        </span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -149,9 +163,9 @@ export const QuickViewModal: React.FC = () => {
                 {/* Quantity */}
                 <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/80 p-1">
                   <button
-                    onClick={() => setQty((prev) => Math.max(1, prev - 1))}
-                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-emerald-600 font-bold transition-colors"
                     aria-label="Giảm"
+                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-emerald-600 font-bold transition-colors"
+                    onClick={() => setQty((prev) => Math.max(1, prev - 1))}
                   >
                     -
                   </button>
@@ -159,9 +173,9 @@ export const QuickViewModal: React.FC = () => {
                     {qty}
                   </span>
                   <button
-                    onClick={() => setQty((prev) => prev + 1)}
-                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-emerald-600 font-bold transition-colors"
                     aria-label="Tăng"
+                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-emerald-600 font-bold transition-colors"
+                    onClick={() => setQty((prev) => prev + 1)}
                   >
                     +
                   </button>
@@ -173,30 +187,36 @@ export const QuickViewModal: React.FC = () => {
                   onPress={handleAddToCart}
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>Thêm vào giỏ ({formatPrice(quickViewProduct.price * qty)})</span>
+                  <span>
+                    Thêm vào giỏ ({formatPrice(quickViewProduct.price * qty)})
+                  </span>
                 </Button>
 
                 {/* Wishlist button */}
                 <button
-                  onClick={() => toggleWishlist(quickViewProduct.id)}
+                  aria-label="Yêu thích"
                   className={`p-3 rounded-xl border transition-colors ${
                     isFav
                       ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-950/40"
                       : "border-slate-200 text-slate-400 hover:text-rose-500 dark:border-slate-700 dark:hover:text-rose-400"
                   }`}
-                  aria-label="Yêu thích"
+                  onClick={() => toggleWishlist(quickViewProduct.id)}
                 >
-                  <Heart className={`w-5 h-5 ${isFav ? "fill-rose-500 text-rose-500" : ""}`} />
+                  <Heart
+                    className={`w-5 h-5 ${isFav ? "fill-rose-500 text-rose-500" : ""}`}
+                  />
                 </button>
               </div>
 
               {/* Guarantees */}
               <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Chính hãng 100%
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Chính
+                  hãng 100%
                 </span>
                 <span className="flex items-center gap-1">
-                  <Truck className="w-3.5 h-3.5 text-emerald-500" /> Miễn phí vận chuyển
+                  <Truck className="w-3.5 h-3.5 text-emerald-500" /> Miễn phí
+                  vận chuyển
                 </span>
                 <span>Đổi trả 30 ngày</span>
               </div>
@@ -207,4 +227,3 @@ export const QuickViewModal: React.FC = () => {
     </div>
   );
 };
-

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+
 import { Product, ProductCategory, CartItem, ToastMessage } from "@/types";
 import { PRODUCTS } from "@/data/mockData";
 
@@ -20,7 +21,11 @@ interface ShopContextType {
   setSelectedCategory: (category: ProductCategory) => void;
   setIsCartOpen: (open: boolean) => void;
   setQuickViewProduct: (product: Product | null) => void;
-  showToast: (title: string, description?: string, type?: "success" | "info" | "warning") => void;
+  showToast: (
+    title: string,
+    description?: string,
+    type?: "success" | "info" | "warning",
+  ) => void;
   removeToast: (id: string) => void;
   totalCartItems: number;
   totalCartPrice: number;
@@ -28,11 +33,14 @@ interface ShopContextType {
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
-export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   // Load initial cart from localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem("homenest_cart");
+
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -43,6 +51,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem("homenest_wishlist");
+
       return saved ? JSON.parse(saved) : ["prod-1", "prod-2"];
     } catch {
       return ["prod-1", "prod-2"];
@@ -50,10 +59,13 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>("all");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ProductCategory>("all");
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
+    null,
+  );
 
   // Sync cart to localStorage
   useEffect(() => {
@@ -78,8 +90,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     description?: string,
     type: "success" | "info" | "warning" = "success",
   ) => {
-    const id = Date.now().toString() + Math.random().toString(36).substring(2, 5);
+    const id =
+      Date.now().toString() + Math.random().toString(36).substring(2, 5);
     const newToast: ToastMessage = { id, title, description, type };
+
     setToasts((prev) => [...prev, newToast]);
 
     setTimeout(() => {
@@ -94,6 +108,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addToCart = (product: Product, quantity = 1) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
+
       if (existing) {
         return prev.map((item) =>
           item.product.id === product.id
@@ -101,6 +116,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
             : item,
         );
       }
+
       return [...prev, { product, quantity }];
     });
 
@@ -113,6 +129,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const removeFromCart = (productId: string) => {
     const item = cart.find((i) => i.product.id === productId);
+
     setCart((prev) => prev.filter((i) => i.product.id !== productId));
     if (item) {
       showToast("Đã xóa khỏi giỏ hàng", item.product.name, "info");
@@ -122,6 +139,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
+
       return;
     }
     setCart((prev) =>
@@ -198,9 +216,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useShop = () => {
   const context = useContext(ShopContext);
+
   if (!context) {
     throw new Error("useShop must be used within a ShopProvider");
   }
+
   return context;
 };
-

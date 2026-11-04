@@ -1,5 +1,12 @@
 import React from "react";
-import { ShieldCheck, Truck, BadgePercent, Headset, Sparkles } from "lucide-react";
+import {
+  ShieldCheck,
+  Truck,
+  BadgePercent,
+  Headset,
+  Sparkles,
+} from "lucide-react";
+
 import { Benefit } from "@/types";
 
 export const BenefitsSection: React.FC = () => {
@@ -7,25 +14,29 @@ export const BenefitsSection: React.FC = () => {
     {
       id: "ben-1",
       title: "Sản phẩm chất lượng",
-      description: "Ưu tiên các sản phẩm có nguồn gốc rõ ràng và chất lượng đáng tin cậy.",
+      description:
+        "Ưu tiên các sản phẩm có nguồn gốc rõ ràng và chất lượng đáng tin cậy.",
       icon: "ShieldCheck",
     },
     {
       id: "ben-2",
       title: "Giao hàng tiện lợi",
-      description: "Đặt hàng dễ dàng, theo dõi trạng thái giao hàng nhanh chóng toàn quốc.",
+      description:
+        "Đặt hàng dễ dàng, theo dõi trạng thái giao hàng nhanh chóng toàn quốc.",
       icon: "Truck",
     },
     {
       id: "ben-3",
       title: "Giá cả hợp lý",
-      description: "Nhiều lựa chọn phù hợp với nhu cầu và ngân sách của từng gia đình.",
+      description:
+        "Nhiều lựa chọn phù hợp với nhu cầu và ngân sách của từng gia đình.",
       icon: "BadgePercent",
     },
     {
       id: "ben-4",
       title: "Hỗ trợ tận tâm",
-      description: "Hỗ trợ tư vấn và giải đáp thắc mắc khi mua sắm 24/7 chu đáo.",
+      description:
+        "Hỗ trợ tư vấn và giải đáp thắc mắc khi mua sắm 24/7 chu đáo.",
       icon: "Headset",
     },
   ];
@@ -33,18 +44,29 @@ export const BenefitsSection: React.FC = () => {
   const renderIcon = (icon: Benefit["icon"]) => {
     switch (icon) {
       case "ShieldCheck":
-        return <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
+        return (
+          <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+        );
       case "Truck":
-        return <Truck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
+        return (
+          <Truck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+        );
       case "BadgePercent":
-        return <BadgePercent className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
+        return (
+          <BadgePercent className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+        );
       case "Headset":
-        return <Headset className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
+        return (
+          <Headset className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+        );
     }
   };
 
   return (
-    <section id="about" className="py-16 sm:py-20 bg-slate-50/70 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800/60">
+    <section
+      className="py-16 sm:py-20 bg-slate-50/70 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800/60"
+      id="about"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-12 sm:mb-16">
@@ -56,7 +78,8 @@ export const BenefitsSection: React.FC = () => {
             Tại sao nên chọn HomeNest?
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300">
-            Chúng tôi tận tâm mang đến trải nghiệm mua sắm gia dụng an tâm tuyệt đối và tiện ích vượt trội cho mọi gia đình.
+            Chúng tôi tận tâm mang đến trải nghiệm mua sắm gia dụng an tâm tuyệt
+            đối và tiện ích vượt trội cho mọi gia đình.
           </p>
         </div>
 
@@ -83,4 +106,3 @@ export const BenefitsSection: React.FC = () => {
     </section>
   );
 };
-
