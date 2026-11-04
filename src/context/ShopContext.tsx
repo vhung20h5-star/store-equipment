@@ -10,6 +10,8 @@ interface ShopContextType {
   selectedCategory: ProductCategory;
   toasts: ToastMessage[];
   isCartOpen: boolean;
+  isCheckoutOpen: boolean;
+  isLookupOpen: boolean;
   quickViewProduct: Product | null;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
@@ -20,6 +22,8 @@ interface ShopContextType {
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: ProductCategory) => void;
   setIsCartOpen: (open: boolean) => void;
+  setIsCheckoutOpen: (open: boolean) => void;
+  setIsLookupOpen: (open: boolean) => void;
   setQuickViewProduct: (product: Product | null) => void;
   showToast: (
     title: string,
@@ -63,6 +67,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<ProductCategory>("all");
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
     null,
   );
@@ -192,6 +198,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
         selectedCategory,
         toasts,
         isCartOpen,
+        isCheckoutOpen,
+        isLookupOpen,
         quickViewProduct,
         addToCart,
         removeFromCart,
@@ -202,6 +210,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
         setSearchQuery,
         setSelectedCategory,
         setIsCartOpen,
+        setIsCheckoutOpen,
+        setIsLookupOpen,
         setQuickViewProduct,
         showToast,
         removeToast,

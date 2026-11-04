@@ -19,6 +19,7 @@ export const Navbar: React.FC = () => {
     totalCartItems,
     wishlist,
     setIsCartOpen,
+    setIsLookupOpen,
     searchQuery,
     setSearchQuery,
     showToast,
@@ -200,20 +201,16 @@ export const Navbar: React.FC = () => {
                       Thành viên HomeNest
                     </p>
                   </div>
-                  <a
-                    className="block px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    href="#products"
+                  <button
+                    className="w-full text-left px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-between"
                     onClick={() => {
                       setIsUserMenuOpen(false);
-                      showToast(
-                        "Đơn hàng",
-                        "Bạn chưa có đơn hàng nào đang chờ giao",
-                        "info",
-                      );
+                      setIsLookupOpen(true);
                     }}
                   >
-                    Đơn hàng của tôi
-                  </a>
+                    <span>Tra cứu đơn hàng</span>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Tra cứu</span>
+                  </button>
                   <a
                     className="block px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                     href="#promotions"
@@ -297,7 +294,17 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+            <Button
+              variant="outline"
+              className="w-full text-slate-700 dark:text-slate-200 font-medium py-2.5 rounded-xl cursor-pointer"
+              onPress={() => {
+                setIsMobileMenuOpen(false);
+                setIsLookupOpen(true);
+              }}
+            >
+              Tra cứu đơn hàng
+            </Button>
             <Button
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl cursor-pointer"
               onPress={() => {

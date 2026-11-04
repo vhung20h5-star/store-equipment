@@ -106,3 +106,59 @@ export interface NewsletterResponse {
   message: string;
 }
 
+export type PaymentMethod = "COD" | "BANK_TRANSFER";
+export type PaymentStatus = "PENDING" | "PAID" | "REFUNDED";
+export type OrderStatus =
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+
+export interface OrderItemRequest {
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateOrderRequest {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  shippingAddress: string;
+  notes?: string;
+  paymentMethod?: PaymentMethod;
+  couponCode?: string;
+  items: OrderItemRequest[];
+}
+
+export interface OrderItemResponse {
+  id: number;
+  productId: string;
+  productName: string;
+  productImage: string;
+  price: number;
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface OrderResponse {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  customerEmail?: string;
+  customerPhone: string;
+  shippingAddress: string;
+  notes?: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  orderStatus: OrderStatus;
+  subtotalAmount: number;
+  discountAmount: number;
+  shippingFee: number;
+  totalAmount: number;
+  couponCode?: string;
+  createdAt: string;
+  items: OrderItemResponse[];
+}
+
+
