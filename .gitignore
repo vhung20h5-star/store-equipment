@@ -7,12 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
+# Dependencies and build outputs
+node_modules/
+**/node_modules/
+dist/
+**/dist/
 dist-ssr
 *.local
 
 # Editor directories and files
+.vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -22,16 +26,17 @@ dist-ssr
 *.sln
 *.sw?
 
-
+# Alternative lockfiles (we use npm and track package-lock.json)
 pnpm-lock.yaml
 yarn.lock
-package-lock.json
 bun.lockb
 
 # Environment files (never commit real secrets)
 .env
 .env.*
-!.env.example
+**/frontend/.env
+**/frontend/.env.*
+!**/.env.example
 
 # Backend build artifacts & Maven target
 backend/target/
