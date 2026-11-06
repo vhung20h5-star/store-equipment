@@ -144,6 +144,7 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: number;
   orderNumber: string;
+  userId?: number;
   customerName: string;
   customerEmail?: string;
   customerPhone: string;
@@ -158,7 +159,21 @@ export interface OrderResponse {
   totalAmount: number;
   couponCode?: string;
   createdAt: string;
+  updatedAt?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancelReason?: string;
   items: OrderItemResponse[];
+}
+
+export interface CancelOrderRequest {
+  reason: string;
+  phone?: string;
+}
+
+export interface UpdateOrderStatusRequest {
+  status: OrderStatus;
+  reason?: string;
 }
 
 export interface User {

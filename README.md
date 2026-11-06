@@ -26,9 +26,9 @@ store-equipment/
 │   │   ├── common/            # DTO dùng chung (ApiResponse, PageResponse)
 │   │   └── exception/         # Xử lý lỗi tập trung GlobalExceptionHandler
 │   ├── src/main/resources/
-│   │   ├── db/migration/      # 5 bản migration Flyway (V1 -> V5)
+│   │   ├── db/migration/      # 6 bản migration Flyway (V1 -> V6)
 │   │   └── application.yml
-│   ├── src/test/              # 38 integration tests tự động
+│   ├── src/test/              # 42+ integration tests tự động
 │   ├── pom.xml
 │   └── mvnw / mvnw.cmd
 ├── frontend/                  # Ứng dụng React 19 + Vite 8 (TypeScript)
@@ -151,11 +151,16 @@ Truy cập ứng dụng tại:
 Hệ thống có sẵn dữ liệu mẫu sau khi nạp Flyway migration:
 
 ### 5.1. Tài khoản mẫu
-- **Khách hàng**:
+- **Khách hàng (`ROLE_USER`)**:
   - Email: `demo@homenest.vn`
-  - Mật khẩu: `demo123`
-  - Họ tên: `Nguyễn Văn Demo`
-  - Số điện thoại: `0901234567`
+  - Mật khẩu: `Password@123`
+  - Họ tên: `Nguyễn Văn An`
+  - Số điện thoại: `0912345678`
+- **Quản trị viên (`ROLE_ADMIN`)**:
+  - Email: `admin@homenest.vn`
+  - Mật khẩu: `Admin@123`
+  - Họ tên: `Quản Trị Viên HomeNest`
+  - Quyền hạn: Xem toàn bộ đơn hàng, lọc/tìm kiếm, chuyển trạng thái vòng đời đơn (`CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`), hủy đơn & hoàn kho tự động.
 - Bạn cũng có thể đăng ký tài khoản mới trực tiếp trên giao diện thông qua form Đăng nhập / Đăng ký.
 
 ### 5.2. Mã giảm giá (Vouchers) mẫu

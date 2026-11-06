@@ -13,6 +13,8 @@ export interface UIContextType {
   setIsCheckoutOpen: (open: boolean) => void;
   isLookupOpen: boolean;
   setIsLookupOpen: (open: boolean) => void;
+  isAdminOrdersOpen: boolean;
+  setIsAdminOrdersOpen: (open: boolean) => void;
   isAuthOpen: boolean;
   setIsAuthOpen: (open: boolean) => void;
   quickViewProduct: Product | null;
@@ -30,6 +32,7 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLookupOpen, setIsLookupOpen] = useState(false);
+  const [isAdminOrdersOpen, setIsAdminOrdersOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
     null,
@@ -48,6 +51,8 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsCheckoutOpen,
         isLookupOpen,
         setIsLookupOpen,
+        isAdminOrdersOpen,
+        setIsAdminOrdersOpen,
         isAuthOpen,
         setIsAuthOpen,
         quickViewProduct,

@@ -8,6 +8,7 @@ public class OrderResponseDTO {
 
     private Long id;
     private String orderNumber;
+    private Long userId;
     private String customerName;
     private String customerEmail;
     private String customerPhone;
@@ -22,6 +23,10 @@ public class OrderResponseDTO {
     private Long totalAmount;
     private String couponCode;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime cancelledAt;
+    private String cancelledBy;
+    private String cancelReason;
     private List<OrderItemResponseDTO> items = new ArrayList<>();
 
     public OrderResponseDTO() {}
@@ -31,6 +36,9 @@ public class OrderResponseDTO {
 
     public String getOrderNumber() { return orderNumber; }
     public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
@@ -73,6 +81,18 @@ public class OrderResponseDTO {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public LocalDateTime getCancelledAt() { return cancelledAt; }
+    public void setCancelledAt(LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }
+
+    public String getCancelledBy() { return cancelledBy; }
+    public void setCancelledBy(String cancelledBy) { this.cancelledBy = cancelledBy; }
+
+    public String getCancelReason() { return cancelReason; }
+    public void setCancelReason(String cancelReason) { this.cancelReason = cancelReason; }
 
     public List<OrderItemResponseDTO> getItems() { return items; }
     public void setItems(List<OrderItemResponseDTO> items) { this.items = items; }

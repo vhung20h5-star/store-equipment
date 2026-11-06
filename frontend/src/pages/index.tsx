@@ -11,6 +11,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { QuickViewModal } from "@/components/QuickViewModal";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { OrderLookupModal } from "@/components/OrderLookupModal";
+import { AdminOrderModal } from "@/components/AdminOrderModal";
 import { AuthModal } from "@/components/AuthModal";
 import { ToastContainer } from "@/components/ToastContainer";
 
@@ -52,6 +53,7 @@ export default function IndexPage() {
       <QuickViewModal />
       <CheckoutModal />
       <OrderLookupModal />
+      <AdminOrderModal />
       <AuthModal />
       <ToastContainer />
     </div>
