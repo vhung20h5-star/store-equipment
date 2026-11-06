@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@heroui/react";
 import { Star, Heart, ShoppingBag, Eye } from "lucide-react";
 
@@ -14,6 +15,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     useShop();
 
   const isFav = isInWishlist(product.id);
+  const isOutOfStock =
+    !product.inStock ||
+    (product.stockQuantity !== undefined && product.stockQuantity <= 0);
+  const isDiscontinued = product.isActive === false;
+  const canBuy = !isOutOfStock && !isDiscontinued;
 
   const formatPrice = (val: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -41,15 +47,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="group relative bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm hover:shadow-xl hover:border-emerald-300 dark:hover:border-emerald-600/60 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Top Image Container */}
       <div className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-700/50">
-        <img
-          alt={product.name}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-          src={product.image}
-        />
+        <Link
+          to={`/products/${product.id}`}
+          className="block w-full h-full"
+          aria-label={`Xem chi tiết ${product.name}`}
+        >
+          <img
+            alt={product.name}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            src={product.image}
+          />
+        </Link>
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
           {product.badge && (
             <span
               className={`px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full shadow-sm ${getBadgeStyle()}`}
@@ -61,6 +73,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-md bg-rose-600 text-white self-start shadow-sm">
               -{product.discountPercent}%
             </span>
+          )}
+          {isDiscontinued ? (
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-slate-900/90 text-white self-start">
+              Ngừng kinh doanh
+            </span>
+          ) : (
+            isOutOfStock && (
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-600 text-white self-start">
+                Tạm hết hàng
+              </span>
+            )
           )}
         </div>
 
@@ -74,7 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            toggleWishlist(product.id);
+            toggleWishlist(product.id, product.name);
           }}
         >
           <Heart
@@ -87,7 +110,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Quick View Button (hover overlay) */}
         <div className="absolute inset-x-0 bottom-3 px-4 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none group-hover:pointer-events-auto">
           <button
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md shadow-lg transition-transform hover:scale-105"
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md shadow-lg transition-transform hover:scale-105 cursor-pointer"
             onClick={() => setQuickViewProduct(product)}
           >
             <Eye className="w-3.5 h-3.5" />
@@ -106,14 +130,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Title */}
           <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 mt-1">
-            <button
-              type="button"
+            <Link
+              to={`/products/${product.id}`}
               className="text-left font-bold hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
               title={product.name}
-              onClick={() => setQuickViewProduct(product)}
             >
               {product.name}
-            </button>
+            </Link>
           </h3>
 
           {/* Rating */}
@@ -145,11 +168,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Action Button */}
         <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center gap-2">
           <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-3 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer transition-colors shadow-sm hover:shadow-emerald-600/30"
-            onPress={() => addToCart(product, 1)}
+            isDisabled={!canBuy}
+            className={`w-full font-medium py-2 px-3 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm transition-colors ${
+              canBuy
+                ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-sm hover:shadow-emerald-600/30"
+                : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+            }`}
+            onPress={() => {
+              if (canBuy) {
+                addToCart(product, 1);
+              }
+            }}
           >
             <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Thêm giỏ hàng</span>
+            <span>
+              {isDiscontinued
+                ? "Ngừng kinh doanh"
+                : isOutOfStock
+                  ? "Tạm hết hàng"
+                  : "Thêm giỏ hàng"}
+            </span>
           </Button>
         </div>
       </div>

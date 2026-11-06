@@ -4,12 +4,12 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type ProductCategory = "all" | "kitchen" | "cleaning" | "air" | "smart";
+export type ProductCategory = "all" | "kitchen" | "cleaning" | "air" | "smart" | (string & {});
 
 export interface Product {
   id: string;
   name: string;
-  category: "kitchen" | "cleaning" | "air" | "smart";
+  category: "kitchen" | "cleaning" | "air" | "smart" | (string & {});
   categoryName: string;
   price: number;
   originalPrice: number;
@@ -17,7 +17,7 @@ export interface Product {
   rating: number;
   reviewsCount: number;
   badge?: string;
-  badgeType?: "bestseller" | "sale" | "featured" | "new";
+  badgeType?: "bestseller" | "sale" | "featured" | "new" | (string & {});
   image: string;
   gallery?: string[];
   description: string;
@@ -25,11 +25,14 @@ export interface Product {
   specs: Record<string, string>;
   inStock: boolean;
   stockQuantity?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Category {
   id: string;
-  slug: "kitchen" | "cleaning" | "air" | "smart";
+  slug: "kitchen" | "cleaning" | "air" | "smart" | (string & {});
   name: string;
   description: string;
   image: string;
@@ -222,6 +225,50 @@ export interface ServerCartResponse {
   totalItems: number;
   totalPrice: number;
 }
+
+export interface CreateProductRequest {
+  id?: string;
+  name: string;
+  categorySlug: string;
+  price: number;
+  originalPrice: number;
+  badge?: string;
+  badgeType?: string;
+  image: string;
+  gallery?: string[];
+  description: string;
+  features?: string[];
+  specs?: Record<string, string>;
+  initialStockQuantity?: number;
+  isActive?: boolean;
+}
+
+export type UpdateProductRequest = Omit<CreateProductRequest, "id" | "initialStockQuantity">;
+
+export interface AdjustStockRequest {
+  quantityChange: number;
+  reason: string;
+}
+
+export interface InventoryAdjustment {
+  id: number;
+  productId: string;
+  previousQuantity: number;
+  quantityChange: number;
+  newQuantity: number;
+  reason: string;
+  adjustedBy: string;
+  createdAt: string;
+}
+
+export interface CreateCategoryRequest {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string;
+  image: string;
+}
+
 
 
 

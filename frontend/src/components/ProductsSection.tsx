@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Sparkles,
   Search,
@@ -10,17 +10,22 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import { fetchProducts } from "@/services/api";
-import { PRODUCTS as FALLBACK_PRODUCTS } from "@/data/mockData";
+import { fetchCategories, fetchProducts } from "@/services/api";
+import {
+  PRODUCTS as FALLBACK_PRODUCTS,
+  CATEGORIES as FALLBACK_CATEGORIES,
+} from "@/data/mockData";
 import { useShop } from "@/context/ShopContext";
 import { ProductCard } from "@/components/ProductCard";
-import { Product, ProductCategory } from "@/types";
+import { Category, Product, ProductCategory } from "@/types";
 
 export const ProductsSection: React.FC = () => {
   const { selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } =
     useShop();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [categoryList, setCategoryList] =
+    useState<Category[]>(FALLBACK_CATEGORIES);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,15 +60,26 @@ export const ProductsSection: React.FC = () => {
     setPage(0);
   }, [selectedCategory]);
 
+  const loadDynamicCategories = useCallback(async () => {
+    try {
+      const cats = await fetchCategories();
+      if (cats && cats.length > 0) {
+        setCategoryList(cats);
+      }
+    } catch {
+      // keep fallback categories if offline
+    }
+  }, []);
+
   const categories: { label: string; value: ProductCategory }[] = [
     { label: "Tất cả", value: "all" },
-    { label: "Thiết bị nhà bếp", value: "kitchen" },
-    { label: "Thiết bị vệ sinh", value: "cleaning" },
-    { label: "Chăm sóc không khí", value: "air" },
-    { label: "Gia dụng thông minh", value: "smart" },
+    ...categoryList.map((c) => ({
+      label: c.name,
+      value: c.slug as ProductCategory,
+    })),
   ];
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -110,11 +126,28 @@ export const ProductsSection: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedCategory, debouncedSearch, page]);
+
+  useEffect(() => {
+    loadDynamicCategories();
+  }, [loadDynamicCategories]);
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategory, debouncedSearch, page]);
+  }, [loadProducts]);
+
+  useEffect(() => {
+    const handleCatalogUpdated = () => {
+      loadDynamicCategories();
+      loadProducts();
+    };
+    window.addEventListener("homenest:catalog-updated", handleCatalogUpdated);
+    return () =>
+      window.removeEventListener(
+        "homenest:catalog-updated",
+        handleCatalogUpdated,
+      );
+  }, [loadDynamicCategories, loadProducts]);
 
   const handleResetFilters = () => {
     setSelectedCategory("all");
@@ -210,7 +243,8 @@ export const ProductsSection: React.FC = () => {
             <span>Đang lọc:</span>
             {selectedCategory !== "all" && (
               <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-medium">
-                {categories.find((c) => c.value === selectedCategory)?.label}
+                {categories.find((c) => c.value === selectedCategory)?.label ||
+                  selectedCategory}
               </span>
             )}
             {searchQuery.trim() !== "" && (

@@ -1,5 +1,6 @@
 package com.homenest.catalog;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,9 @@ public class ProductResponseDTO {
     private Map<String, String> specs = new HashMap<>();
     private Boolean inStock;
     private Integer stockQuantity;
+    private Boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ProductResponseDTO() {}
 
@@ -81,5 +85,14 @@ public class ProductResponseDTO {
 
     public Integer getStockQuantity() { return stockQuantity; }
     public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
 

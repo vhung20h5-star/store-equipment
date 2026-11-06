@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import IndexPage from "@/pages/index";
+import ProductDetailPage from "@/pages/product-detail";
 import DocsPage from "@/pages/docs";
 import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
@@ -10,6 +11,7 @@ function App() {
   return (
     <Routes>
       <Route element={<IndexPage />} path="/" />
+      <Route element={<ProductDetailPage />} path="/products/:id" />
       <Route element={<DocsPage />} path="/docs" />
       <Route element={<PricingPage />} path="/pricing" />
       <Route element={<BlogPage />} path="/blog" />

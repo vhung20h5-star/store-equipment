@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -587,5 +588,120 @@ class OrderControllerTest {
         mockMvc.perform(get("/api/v1/products/prod-3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.stockQuantity", is(stockBefore)));
+    }
+
+    @Test
+    @DisplayName("US4: Order snapshot immutability after product edit/hide, checkout rejection when hidden, and restock on cancel while keeping isActive=false")
+    void testOrderSnapshotImmutabilityAndDiscontinuedProductLifecycle() throws Exception {
+        String adminToken = loginAndGetToken("admin@homenest.vn", "Admin@123");
+        String userToken = loginAndGetToken("demo@homenest.vn", "Password@123");
+
+        // 1. Admin creates a dedicated product for order lifecycle testing
+        mockMvc.perform(post("/api/v1/admin/products")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": "prod-order-lifecycle",
+                                    "name": "Máy Lọc Nước RO HomeNest G1",
+                                    "categorySlug": "kitchen",
+                                    "price": 4500000,
+                                    "originalPrice": 5500000,
+                                    "image": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800",
+                                    "description": "Máy lọc nước RO 10 lõi.",
+                                    "initialStockQuantity": 2,
+                                    "isActive": true
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        // 2. Customer orders all 2 units at price 4,500,000 -> stock drops to 0 (inStock = false)
+        MvcResult orderRes = mockMvc.perform(post("/api/v1/orders")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "customerName": "Nguyễn Văn An",
+                                    "customerPhone": "0912345678",
+                                    "shippingAddress": "Hà Nội",
+                                    "paymentMethod": "COD",
+                                    "items": [
+                                        {
+                                            "productId": "prod-order-lifecycle",
+                                            "quantity": 2
+                                        }
+                                    ]
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.totalAmount", is(9000000)))
+                .andReturn();
+        String orderNumber = JsonPath.read(orderRes.getResponse().getContentAsString(), "$.data.orderNumber");
+
+        // 3. Admin updates product name & price (to 6,000,000) and hides it (isActive = false)
+        mockMvc.perform(put("/api/v1/admin/products/prod-order-lifecycle")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Máy Lọc Nước RO HomeNest G2 Đổi Tên",
+                                    "categorySlug": "kitchen",
+                                    "price": 6000000,
+                                    "originalPrice": 7000000,
+                                    "image": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800",
+                                    "description": "Đã nâng giá",
+                                    "isActive": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.isActive", is(false)))
+                .andExpect(jsonPath("$.data.stockQuantity", is(0)))
+                .andExpect(jsonPath("$.data.inStock", is(false)));
+
+        // 4. Verify historical order snapshot still preserves original name ("Máy Lọc Nước RO HomeNest G1") and price (4,500,000)
+        mockMvc.perform(get("/api/v1/orders/" + orderNumber))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items[0].productName", is("Máy Lọc Nước RO HomeNest G1")))
+                .andExpect(jsonPath("$.data.items[0].price", is(4500000)))
+                .andExpect(jsonPath("$.data.items[0].totalPrice", is(9000000)));
+
+        // 5. Verify cancelling the order restores stockQuantity to 2 and inStock to true, while keeping isActive = false
+        mockMvc.perform(post("/api/v1/orders/" + orderNumber + "/cancel")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "reason": "Đổi sang dòng sản phẩm khác"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.orderStatus", is("CANCELLED")));
+
+        mockMvc.perform(get("/api/v1/products/prod-order-lifecycle"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.stockQuantity", is(2)))
+                .andExpect(jsonPath("$.data.inStock", is(true)))
+                .andExpect(jsonPath("$.data.isActive", is(false)));
+
+        // 6. Attempting to place a new order for the discontinued product (even though stockQuantity = 2) fails with 400
+        mockMvc.perform(post("/api/v1/orders")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "customerName": "Nguyễn Văn An",
+                                    "customerPhone": "0912345678",
+                                    "shippingAddress": "Hà Nội",
+                                    "items": [
+                                        {
+                                            "productId": "prod-order-lifecycle",
+                                            "quantity": 1
+                                        }
+                                    ]
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.message", containsString("ngừng kinh doanh")));
     }
 }

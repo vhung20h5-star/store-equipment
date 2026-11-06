@@ -7,5 +7,6 @@ public interface CategoryService {
     List<CategoryResponseDTO> getAllCategories();
 
     CategoryResponseDTO getCategoryBySlug(String slug);
-}
 
+    CategoryResponseDTO createCategory(CreateCategoryRequest request);
+}

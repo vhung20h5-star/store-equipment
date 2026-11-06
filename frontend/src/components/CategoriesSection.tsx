@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ArrowRight, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
 
 import { fetchCategories } from "@/services/api";
@@ -12,7 +12,7 @@ export const CategoriesSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -29,11 +29,23 @@ export const CategoriesSection: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [loadCategories]);
+
+  useEffect(() => {
+    const handleCatalogUpdated = () => {
+      loadCategories();
+    };
+    window.addEventListener("homenest:catalog-updated", handleCatalogUpdated);
+    return () =>
+      window.removeEventListener(
+        "homenest:catalog-updated",
+        handleCatalogUpdated,
+      );
+  }, [loadCategories]);
 
   const handleSelectCategory = (slug: ProductCategory) => {
     setSelectedCategory(slug);
