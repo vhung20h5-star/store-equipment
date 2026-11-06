@@ -20,6 +20,7 @@ export const Navbar: React.FC = () => {
     wishlist,
     setIsCartOpen,
     setIsLookupOpen,
+    setIsAdminOrdersOpen,
     setIsAuthOpen,
     currentUser,
     logout,
@@ -217,9 +218,27 @@ export const Navbar: React.FC = () => {
                       setIsLookupOpen(true);
                     }}
                   >
-                    <span>Tra cứu đơn hàng</span>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Tra cứu</span>
+                    <span>
+                      {currentUser ? "Đơn hàng của tôi" : "Tra cứu đơn hàng"}
+                    </span>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                      {currentUser ? "Xem đơn" : "Tra cứu"}
+                    </span>
                   </button>
+                  {currentUser?.role === "ROLE_ADMIN" && (
+                    <button
+                      className="w-full text-left px-4 py-2 text-xs text-amber-700 dark:text-amber-400 font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        setIsAdminOrdersOpen(true);
+                      }}
+                    >
+                      <span>Quản trị đơn hàng</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold">
+                        ADMIN
+                      </span>
+                    </button>
+                  )}
                   <a
                     className="block px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                     href="#promotions"
@@ -339,6 +358,18 @@ export const Navbar: React.FC = () => {
                 Đăng nhập / Đăng ký
               </Button>
             )}
+            {currentUser?.role === "ROLE_ADMIN" && (
+              <Button
+                variant="outline"
+                className="w-full text-amber-700 dark:text-amber-300 border-amber-300 font-semibold py-2.5 rounded-xl cursor-pointer"
+                onPress={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsAdminOrdersOpen(true);
+                }}
+              >
+                Quản trị đơn hàng (Admin)
+              </Button>
+            )}
             <Button
               variant="outline"
               className="w-full text-slate-700 dark:text-slate-200 font-medium py-2.5 rounded-xl cursor-pointer"
@@ -347,7 +378,7 @@ export const Navbar: React.FC = () => {
                 setIsLookupOpen(true);
               }}
             >
-              Tra cứu đơn hàng
+              {currentUser ? "Đơn hàng của tôi & Tra cứu" : "Tra cứu đơn hàng"}
             </Button>
             <Button
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl cursor-pointer"

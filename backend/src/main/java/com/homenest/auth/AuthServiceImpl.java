@@ -56,6 +56,39 @@ public class AuthServiceImpl implements AuthService {
                     cartRepository.save(new Cart(saved));
                 }
         );
+
+        // Guarantee demo admin exists and has ROLE_ADMIN matching "Admin@123"
+        userRepository.findByEmail("admin@homenest.vn").ifPresentOrElse(
+                admin -> {
+                    boolean changed = false;
+                    if (!passwordEncoder.matches("Admin@123", admin.getPasswordHash())) {
+                        admin.setPasswordHash(passwordEncoder.encode("Admin@123"));
+                        changed = true;
+                    }
+                    if (!"ROLE_ADMIN".equals(admin.getRole())) {
+                        admin.setRole("ROLE_ADMIN");
+                        changed = true;
+                    }
+                    if (changed) {
+                        userRepository.save(admin);
+                    }
+                    if (cartRepository.findByUserId(admin.getId()).isEmpty()) {
+                        cartRepository.save(new Cart(admin));
+                    }
+                },
+                () -> {
+                    User demoAdmin = new User();
+                    demoAdmin.setEmail("admin@homenest.vn");
+                    demoAdmin.setFullName("Quản Trị Viên HomeNest");
+                    demoAdmin.setPasswordHash(passwordEncoder.encode("Admin@123"));
+                    demoAdmin.setPhone("0900000001");
+                    demoAdmin.setAddress("Trụ sở HomeNest, Quận 1, TP.HCM");
+                    demoAdmin.setRole("ROLE_ADMIN");
+                    demoAdmin.setIsActive(true);
+                    User savedAdmin = userRepository.save(demoAdmin);
+                    cartRepository.save(new Cart(savedAdmin));
+                }
+        );
     }
 
     @Override

@@ -51,6 +51,12 @@ export const AuthModal: React.FC = () => {
     setErrorMsg(null);
   };
 
+  const handleFillAdminDemo = () => {
+    setLoginEmail("admin@homenest.vn");
+    setLoginPassword("Admin@123");
+    setErrorMsg(null);
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -207,21 +213,39 @@ export const AuthModal: React.FC = () => {
               </div>
 
               {/* Demo auto-fill banner */}
-              <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <div className="text-[11px] text-slate-600 dark:text-slate-400">
-                    <span className="font-semibold text-emerald-700 dark:text-emerald-300">Tài khoản mẫu:</span>{" "}
-                    demo@homenest.vn
+              <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                    <div className="text-[11px] text-slate-600 dark:text-slate-400">
+                      <span className="font-semibold text-emerald-700 dark:text-emerald-300">Khách hàng:</span>{" "}
+                      demo@homenest.vn
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleFillDemo}
+                    className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    Điền nhanh
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleFillDemo}
-                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
-                >
-                  Điền nhanh
-                </button>
+                <div className="flex items-center justify-between pt-1.5 border-t border-emerald-200/60 dark:border-emerald-800/50">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <div className="text-[11px] text-slate-600 dark:text-slate-400">
+                      <span className="font-semibold text-amber-700 dark:text-amber-300">Quản trị (Admin):</span>{" "}
+                      admin@homenest.vn
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleFillAdminDemo}
+                    className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline"
+                  >
+                    Điền Admin
+                  </button>
+                </div>
               </div>
 
               <Button
