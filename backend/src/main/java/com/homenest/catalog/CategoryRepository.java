@@ -11,7 +11,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     Optional<Category> findBySlug(String slug);
 
-    @Query("SELECT c.slug, COUNT(p) FROM Category c LEFT JOIN c.products p GROUP BY c.slug")
+    @Query("SELECT c.slug, COUNT(p) FROM Category c LEFT JOIN c.products p ON p.isActive = true GROUP BY c.slug")
     List<Object[]> countProductsGroupedBySlug();
 }
 

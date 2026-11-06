@@ -1,5 +1,19 @@
-import { Category, Product, PageResponse } from "@/types";
-import { API_BASE_URL, ApiError, handleResponse } from "@/services/httpClient";
+import {
+  AdjustStockRequest,
+  Category,
+  CreateCategoryRequest,
+  CreateProductRequest,
+  InventoryAdjustment,
+  PageResponse,
+  Product,
+  UpdateProductRequest,
+} from "@/types";
+import {
+  API_BASE_URL,
+  ApiError,
+  getAuthHeaders,
+  handleResponse,
+} from "@/services/httpClient";
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
@@ -121,3 +135,187 @@ export async function fetchBestsellers(): Promise<Product[]> {
   }
 }
 
+export interface AdminProductsFilterParams {
+  category?: string;
+  search?: string;
+  isActive?: boolean;
+  inStock?: boolean;
+  page?: number;
+  size?: number;
+}
+
+export async function getAdminProducts(
+  params: AdminProductsFilterParams = {},
+): Promise<PageResponse<Product>> {
+  try {
+    const query = new URLSearchParams();
+
+    if (params.category && params.category !== "all") {
+      query.set("category", params.category);
+    }
+    if (params.search && params.search.trim().length > 0) {
+      query.set("search", params.search.trim());
+    }
+    if (params.isActive !== undefined) {
+      query.set("isActive", String(params.isActive));
+    }
+    if (params.inStock !== undefined) {
+      query.set("inStock", String(params.inStock));
+    }
+    if (params.page !== undefined && params.page >= 0) {
+      query.set("page", String(params.page));
+    }
+    if (params.size !== undefined && params.size > 0) {
+      query.set("size", String(params.size));
+    }
+
+    const qs = query.toString();
+    const res = await fetch(
+      `${API_BASE_URL}/admin/products${qs ? `?${qs}` : ""}`,
+      {
+        method: "GET",
+        headers: getAuthHeaders({
+          Accept: "application/json",
+        }),
+      },
+    );
+
+    return await handleResponse<PageResponse<Product>>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tải danh sách sản phẩm quản trị.");
+  }
+}
+
+export async function createProductAdmin(
+  data: CreateProductRequest,
+): Promise<Product> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/products`, {
+      method: "POST",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }),
+      body: JSON.stringify(data),
+    });
+
+    return await handleResponse<Product>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tạo sản phẩm mới.");
+  }
+}
+
+export async function updateProductAdmin(
+  id: string,
+  data: UpdateProductRequest,
+): Promise<Product> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/admin/products/${encodeURIComponent(id)}`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+        body: JSON.stringify(data),
+      },
+    );
+
+    return await handleResponse<Product>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể cập nhật thông tin sản phẩm.");
+  }
+}
+
+export async function updateProductVisibilityAdmin(
+  id: string,
+  isActive: boolean,
+): Promise<Product> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/admin/products/${encodeURIComponent(id)}/visibility`,
+      {
+        method: "PATCH",
+        headers: getAuthHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+        body: JSON.stringify({ isActive }),
+      },
+    );
+
+    return await handleResponse<Product>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể cập nhật trạng thái hiển thị sản phẩm.");
+  }
+}
+
+export async function adjustProductStockAdmin(
+  id: string,
+  data: AdjustStockRequest,
+): Promise<InventoryAdjustment> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/admin/products/${encodeURIComponent(id)}/stock-adjustments`,
+      {
+        method: "POST",
+        headers: getAuthHeaders({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }),
+        body: JSON.stringify(data),
+      },
+    );
+
+    return await handleResponse<InventoryAdjustment>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể điều chỉnh tồn kho sản phẩm.");
+  }
+}
+
+export async function getProductStockAdjustmentsAdmin(
+  id: string,
+): Promise<InventoryAdjustment[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/admin/products/${encodeURIComponent(id)}/stock-adjustments`,
+      {
+        method: "GET",
+        headers: getAuthHeaders({
+          Accept: "application/json",
+        }),
+      },
+    );
+
+    return await handleResponse<InventoryAdjustment[]>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tải lịch sử điều chỉnh tồn kho.");
+  }
+}
+
+export async function createCategoryAdmin(
+  data: CreateCategoryRequest,
+): Promise<Category> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+      method: "POST",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }),
+      body: JSON.stringify(data),
+    });
+
+    return await handleResponse<Category>(res);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Không thể tạo danh mục mới.");
+  }
+}

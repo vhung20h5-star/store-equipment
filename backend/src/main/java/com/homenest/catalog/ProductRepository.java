@@ -15,7 +15,11 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
 
     List<Product> findByCategorySlug(String categorySlug);
 
+    List<Product> findByCategorySlugAndIsActiveTrue(String categorySlug);
+
     List<Product> findByBadgeType(String badgeType);
+
+    List<Product> findByBadgeTypeAndIsActiveTrue(String badgeType);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Product p WHERE p.id = :id")

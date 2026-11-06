@@ -83,6 +83,12 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findByIdWithLock(itemReq.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với mã: " + itemReq.getProductId()));
 
+            if (Boolean.FALSE.equals(product.getIsActive())) {
+                throw new IllegalArgumentException(
+                        "Sản phẩm '" + product.getName() + "' hiện đã ngừng kinh doanh."
+                );
+            }
+
             if (product.getStockQuantity() < itemReq.getQuantity()) {
                 throw new InsufficientStockException(
                         "Sản phẩm '" + product.getName() + "' không đủ số lượng trong kho (còn " + product.getStockQuantity() + " sản phẩm)."
@@ -345,9 +351,8 @@ public class OrderServiceImpl implements OrderService {
                 int currentStock = product.getStockQuantity() != null ? product.getStockQuantity() : 0;
                 int restoredStock = currentStock + item.getQuantity();
                 product.setStockQuantity(restoredStock);
-                if (restoredStock > 0) {
-                    product.setInStock(true);
-                }
+                product.setInStock(restoredStock > 0);
+                product.setUpdatedAt(LocalDateTime.now());
                 productRepository.save(product);
             });
         }

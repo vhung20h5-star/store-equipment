@@ -79,6 +79,10 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm: " + request.getProductId()));
 
+        if (Boolean.FALSE.equals(product.getIsActive())) {
+            throw new IllegalArgumentException("Sản phẩm '" + product.getName() + "' hiện đã ngừng kinh doanh.");
+        }
+
         Optional<CartItemEntity> existingItemOpt = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
         if (existingItemOpt.isPresent()) {
@@ -101,14 +105,17 @@ public class CartServiceImpl implements CartService {
         if (request.getQuantity() <= 0) {
             cartItemRepository.deleteByCartIdAndProductId(cart.getId(), productId);
         } else {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm: " + productId));
+            if (Boolean.FALSE.equals(product.getIsActive())) {
+                throw new IllegalArgumentException("Sản phẩm '" + product.getName() + "' hiện đã ngừng kinh doanh.");
+            }
             Optional<CartItemEntity> existingItemOpt = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
             if (existingItemOpt.isPresent()) {
                 CartItemEntity existing = existingItemOpt.get();
                 existing.setQuantity(request.getQuantity());
                 cartItemRepository.save(existing);
             } else {
-                Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm: " + productId));
                 CartItemEntity newItem = new CartItemEntity(cart, product, request.getQuantity());
                 cartItemRepository.save(newItem);
             }
@@ -141,7 +148,7 @@ public class CartServiceImpl implements CartService {
         if (request.getItems() != null) {
             for (SyncCartItemRequest guestItem : request.getItems()) {
                 Optional<Product> productOpt = productRepository.findById(guestItem.getProductId());
-                if (productOpt.isPresent()) {
+                if (productOpt.isPresent() && !Boolean.FALSE.equals(productOpt.get().getIsActive())) {
                     Product product = productOpt.get();
                     Optional<CartItemEntity> existingOpt = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
                     if (existingOpt.isPresent()) {

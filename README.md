@@ -26,9 +26,9 @@ store-equipment/
 │   │   ├── common/            # DTO dùng chung (ApiResponse, PageResponse)
 │   │   └── exception/         # Xử lý lỗi tập trung GlobalExceptionHandler
 │   ├── src/main/resources/
-│   │   ├── db/migration/      # 6 bản migration Flyway (V1 -> V6)
+│   │   ├── db/migration/      # 7 bản migration Flyway (V1 -> V7)
 │   │   └── application.yml
-│   ├── src/test/              # 42+ integration tests tự động
+│   ├── src/test/              # 48 integration tests tự động
 │   ├── pom.xml
 │   └── mvnw / mvnw.cmd
 ├── frontend/                  # Ứng dụng React 19 + Vite 8 (TypeScript)
@@ -108,7 +108,7 @@ cd backend
 docker compose up -d
 ```
 
-> **Ghi chú**: Container PostgreSQL sẽ khởi động trên cổng `5432`. Khi Backend khởi động, **Flyway** sẽ tự động chạy 5 bản migration để tạo bảng và nạp dữ liệu mẫu.
+> **Ghi chú**: Container PostgreSQL sẽ khởi động trên cổng `5432`. Khi Backend khởi động, **Flyway** sẽ tự động chạy 7 bản migration (`V1` → `V7`) để tạo bảng và nạp dữ liệu mẫu.
 
 ### Bước 2: Khởi chạy Backend (Spring Boot API)
 Mở cửa sổ dòng lệnh trong thư mục `backend`:
@@ -160,7 +160,11 @@ Hệ thống có sẵn dữ liệu mẫu sau khi nạp Flyway migration:
   - Email: `admin@homenest.vn`
   - Mật khẩu: `Admin@123`
   - Họ tên: `Quản Trị Viên HomeNest`
-  - Quyền hạn: Xem toàn bộ đơn hàng, lọc/tìm kiếm, chuyển trạng thái vòng đời đơn (`CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`), hủy đơn & hoàn kho tự động.
+  - Quyền hạn:
+    - **Quản trị sản phẩm & kho hàng**: Thêm sản phẩm mới, tạo danh mục mới, chỉnh sửa giá/ảnh/mô tả/thông số kỹ thuật (`specs`), ẩn/mở bán lại sản phẩm (`isActive`), và điều chỉnh tồn kho có lý do kèm lịch sử kiểm toán (`inventory_adjustments`).
+    - **Quản trị vòng đời đơn hàng**: Xem toàn bộ đơn hàng, lọc/tìm kiếm, chuyển trạng thái vòng đời đơn (`CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`), hủy đơn & hoàn kho tự động.
+- **Trang chi tiết sản phẩm (`/products/:id`)**:
+  - Mỗi sản phẩm có URL riêng có thể chia sẻ trực tiếp (ví dụ: `http://localhost:5173/products/prod-1`), hiển thị bộ sưu tập ảnh, giá & mức giảm, trạng thái tồn kho / ngừng kinh doanh, bảng thông số kỹ thuật 2 cột và sản phẩm cùng danh mục.
 - Bạn cũng có thể đăng ký tài khoản mới trực tiếp trên giao diện thông qua form Đăng nhập / Đăng ký.
 
 ### 5.2. Mã giảm giá (Vouchers) mẫu
@@ -172,7 +176,7 @@ Hệ thống có sẵn dữ liệu mẫu sau khi nạp Flyway migration:
 
 ## 6. Hướng dẫn kiểm tra tự động (Automated Testing)
 
-### 6.1. Kiểm tra Backend (38 tests)
+### 6.1. Kiểm tra Backend (48 integration tests)
 Backend sở hữu bộ test tích hợp toàn diện sử dụng CSDL in-memory H2, không yêu cầu bật Docker:
 
 - **Trên Windows**:

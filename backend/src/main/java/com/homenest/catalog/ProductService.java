@@ -11,5 +11,23 @@ public interface ProductService {
     ProductResponseDTO getProductById(String id);
 
     List<ProductResponseDTO> getBestsellers();
-}
 
+    PageResponse<ProductResponseDTO> getAdminProducts(
+            String category,
+            String search,
+            Boolean isActive,
+            Boolean inStock,
+            int page,
+            int size
+    );
+
+    ProductResponseDTO createProduct(CreateProductRequest request, String adminEmail);
+
+    ProductResponseDTO updateProduct(String id, UpdateProductRequest request);
+
+    ProductResponseDTO updateProductVisibility(String id, boolean isActive);
+
+    InventoryAdjustmentResponseDTO adjustStock(String id, AdjustStockRequest request, String adminEmail);
+
+    List<InventoryAdjustmentResponseDTO> getStockAdjustments(String id);
+}

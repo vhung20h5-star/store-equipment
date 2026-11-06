@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@heroui/react";
 import {
   Home,
@@ -21,6 +22,7 @@ export const Navbar: React.FC = () => {
     setIsCartOpen,
     setIsLookupOpen,
     setIsAdminOrdersOpen,
+    setIsAdminProductsOpen,
     setIsAuthOpen,
     currentUser,
     logout,
@@ -28,6 +30,9 @@ export const Navbar: React.FC = () => {
     setSearchQuery,
     showToast,
   } = useShop();
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,27 +56,39 @@ export const Navbar: React.FC = () => {
     { label: "Về chúng tôi", href: "#about" },
   ];
 
+  const scrollToOrNavigate = (href: string) => {
+    if (location.pathname !== "/") {
+      navigate(href === "#hero" ? "/" : `/${href}`);
+      return;
+    }
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    } else if (href === "#hero") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
-    const target = document.querySelector(href);
-
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToOrNavigate(href);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    // If user starts typing, scroll gently to products section if not already there
-    if (e.target.value.trim().length > 0) {
-      const prodSection = document.getElementById("products");
-
-      if (prodSection && window.scrollY < 400) {
-        prodSection.scrollIntoView({ behavior: "smooth" });
+    const val = e.target.value;
+    setSearchQuery(val);
+    if (val.trim().length > 0) {
+      if (location.pathname !== "/") {
+        navigate("/#products");
+      } else {
+        const prodSection = document.getElementById("products");
+        if (prodSection && window.scrollY < 400) {
+          prodSection.scrollIntoView({ behavior: "smooth" });
+        }
       }
     }
   };
@@ -149,9 +166,7 @@ export const Navbar: React.FC = () => {
               aria-label="Danh sách yêu thích"
               className="relative p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               onClick={() => {
-                const el = document.getElementById("products");
-
-                if (el) el.scrollIntoView({ behavior: "smooth" });
+                scrollToOrNavigate("#products");
                 showToast(
                   "Yêu thích",
                   `Bạn có ${wishlist.length} sản phẩm đã lưu`,
@@ -190,7 +205,9 @@ export const Navbar: React.FC = () => {
               >
                 {currentUser ? (
                   <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
-                    {currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : "U"}
+                    {currentUser.fullName
+                      ? currentUser.fullName.charAt(0).toUpperCase()
+                      : "U"}
                   </div>
                 ) : (
                   <User className="w-5 h-5" />
@@ -200,12 +217,14 @@ export const Navbar: React.FC = () => {
 
               {isUserMenuOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 animate-in fade-in"
+                  className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 animate-in fade-in"
                   onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
                   <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
                     <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                      {currentUser ? currentUser.fullName : "Xin chào, Quý khách!"}
+                      {currentUser
+                        ? currentUser.fullName
+                        : "Xin chào, Quý khách!"}
                     </p>
                     <p className="text-[11px] text-slate-400 truncate">
                       {currentUser ? currentUser.email : "Thành viên HomeNest"}
@@ -226,23 +245,40 @@ export const Navbar: React.FC = () => {
                     </span>
                   </button>
                   {currentUser?.role === "ROLE_ADMIN" && (
-                    <button
-                      className="w-full text-left px-4 py-2 text-xs text-amber-700 dark:text-amber-400 font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center justify-between"
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        setIsAdminOrdersOpen(true);
-                      }}
-                    >
-                      <span>Quản trị đơn hàng</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold">
-                        ADMIN
-                      </span>
-                    </button>
+                    <>
+                      <button
+                        className="w-full text-left px-4 py-2 text-xs text-emerald-700 dark:text-emerald-400 font-semibold hover:bg-emerald-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          setIsAdminProductsOpen(true);
+                        }}
+                      >
+                        <span>Quản trị sản phẩm & kho</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
+                          ADMIN
+                        </span>
+                      </button>
+                      <button
+                        className="w-full text-left px-4 py-2 text-xs text-amber-700 dark:text-amber-400 font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center justify-between"
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          setIsAdminOrdersOpen(true);
+                        }}
+                      >
+                        <span>Quản trị đơn hàng</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold">
+                          ADMIN
+                        </span>
+                      </button>
+                    </>
                   )}
                   <a
                     className="block px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                     href="#promotions"
-                    onClick={() => setIsUserMenuOpen(false)}
+                    onClick={(e) => {
+                      setIsUserMenuOpen(false);
+                      handleNavClick(e, "#promotions");
+                    }}
                   >
                     Voucher & Ưu đãi
                   </a>
@@ -275,11 +311,7 @@ export const Navbar: React.FC = () => {
             <div className="hidden sm:block">
               <Button
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-full cursor-pointer transition-all shadow-md shadow-emerald-600/20"
-                onPress={() => {
-                  const target = document.getElementById("products");
-
-                  if (target) target.scrollIntoView({ behavior: "smooth" });
-                }}
+                onPress={() => scrollToOrNavigate("#products")}
               >
                 Mua sắm ngay
               </Button>
@@ -334,7 +366,9 @@ export const Navbar: React.FC = () => {
             {currentUser ? (
               <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800">
                 <div className="text-xs">
-                  <p className="font-bold text-slate-800 dark:text-slate-100">{currentUser.fullName}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-100">
+                    {currentUser.fullName}
+                  </p>
                   <p className="text-slate-400">{currentUser.email}</p>
                 </div>
                 <button
@@ -359,16 +393,28 @@ export const Navbar: React.FC = () => {
               </Button>
             )}
             {currentUser?.role === "ROLE_ADMIN" && (
-              <Button
-                variant="outline"
-                className="w-full text-amber-700 dark:text-amber-300 border-amber-300 font-semibold py-2.5 rounded-xl cursor-pointer"
-                onPress={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsAdminOrdersOpen(true);
-                }}
-              >
-                Quản trị đơn hàng (Admin)
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full text-emerald-700 dark:text-emerald-300 border-emerald-300 font-semibold py-2.5 rounded-xl cursor-pointer"
+                  onPress={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAdminProductsOpen(true);
+                  }}
+                >
+                  Quản trị sản phẩm & kho (Admin)
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full text-amber-700 dark:text-amber-300 border-amber-300 font-semibold py-2.5 rounded-xl cursor-pointer"
+                  onPress={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAdminOrdersOpen(true);
+                  }}
+                >
+                  Quản trị đơn hàng (Admin)
+                </Button>
+              </>
             )}
             <Button
               variant="outline"
@@ -384,9 +430,7 @@ export const Navbar: React.FC = () => {
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl cursor-pointer"
               onPress={() => {
                 setIsMobileMenuOpen(false);
-                const target = document.getElementById("products");
-
-                if (target) target.scrollIntoView({ behavior: "smooth" });
+                scrollToOrNavigate("#products");
               }}
             >
               Mua sắm ngay

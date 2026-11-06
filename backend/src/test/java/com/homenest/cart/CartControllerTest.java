@@ -206,5 +206,96 @@ class CartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)));
     }
+
+    @Test
+    @DisplayName("US4: Discontinued product (isActive=false) cannot be added or increased in cart, but can be removed")
+    void testDiscontinuedProductCartGuards() throws Exception {
+        // Login as admin to hide prod-6 temporarily
+        MvcResult adminLogin = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "email": "admin@homenest.vn",
+                                    "password": "Admin@123"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn();
+        String adminToken = JsonPath.read(adminLogin.getResponse().getContentAsString(), "$.data.token");
+
+        // Add prod-6 while active
+        mockMvc.perform(post("/api/v1/cart/items")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "productId": "prod-6",
+                                    "quantity": 1
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        try {
+            // Admin hides prod-6
+            mockMvc.perform(patch("/api/v1/admin/products/prod-6/visibility")
+                            .header("Authorization", "Bearer " + adminToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "isActive": false
+                                    }
+                                    """))
+                    .andExpect(status().isOk());
+
+            // Adding discontinued product to cart fails with 400
+            mockMvc.perform(post("/api/v1/cart/items")
+                            .header("Authorization", "Bearer " + userToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "productId": "prod-6",
+                                        "quantity": 1
+                                    }
+                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.success", is(false)))
+                    .andExpect(jsonPath("$.message", containsString("ngừng kinh doanh")));
+
+            // Updating quantity > 0 for discontinued product fails with 400
+            mockMvc.perform(put("/api/v1/cart/items/prod-6")
+                            .header("Authorization", "Bearer " + userToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "quantity": 3
+                                    }
+                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.success", is(false)));
+
+            // Removing discontinued product from cart succeeds (quantity = 0)
+            mockMvc.perform(put("/api/v1/cart/items/prod-6")
+                            .header("Authorization", "Bearer " + userToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "quantity": 0
+                                    }
+                                    """))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success", is(true)));
+        } finally {
+            // Restore prod-6 visibility
+            mockMvc.perform(patch("/api/v1/admin/products/prod-6/visibility")
+                            .header("Authorization", "Bearer " + adminToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "isActive": true
+                                    }
+                                    """))
+                    .andExpect(status().isOk());
+        }
+    }
 }
 

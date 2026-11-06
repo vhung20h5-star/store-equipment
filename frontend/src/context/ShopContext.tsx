@@ -31,6 +31,7 @@ export interface ShopContextType {
   isCheckoutOpen: boolean;
   isLookupOpen: boolean;
   isAdminOrdersOpen: boolean;
+  isAdminProductsOpen: boolean;
   isAuthOpen: boolean;
   currentUser: User | null;
   quickViewProduct: Product | null;
@@ -46,6 +47,7 @@ export interface ShopContextType {
   setIsCheckoutOpen: (open: boolean) => void;
   setIsLookupOpen: (open: boolean) => void;
   setIsAdminOrdersOpen: (open: boolean) => void;
+  setIsAdminProductsOpen: (open: boolean) => void;
   setIsAuthOpen: (open: boolean) => void;
   setQuickViewProduct: (product: Product | null) => void;
   login: (data: LoginRequest) => Promise<void>;
@@ -141,6 +143,7 @@ export const useShop = (): ShopContextType => {
     isCheckoutOpen: ui.isCheckoutOpen,
     isLookupOpen: ui.isLookupOpen,
     isAdminOrdersOpen: ui.isAdminOrdersOpen,
+    isAdminProductsOpen: ui.isAdminProductsOpen,
     isAuthOpen: ui.isAuthOpen,
     currentUser: auth.currentUser,
     quickViewProduct: ui.quickViewProduct,
@@ -156,6 +159,7 @@ export const useShop = (): ShopContextType => {
     setIsCheckoutOpen: ui.setIsCheckoutOpen,
     setIsLookupOpen: ui.setIsLookupOpen,
     setIsAdminOrdersOpen: ui.setIsAdminOrdersOpen,
+    setIsAdminProductsOpen: ui.setIsAdminProductsOpen,
     setIsAuthOpen: ui.setIsAuthOpen,
     setQuickViewProduct: ui.setQuickViewProduct,
     login,
