@@ -231,9 +231,12 @@ export const OrderLookupModal: React.FC = () => {
         ),
       );
       setCancellingOrderNumber(null);
+      window.dispatchEvent(new Event("homenest:vouchers-updated"));
       showToast(
         "Đã hủy đơn hàng",
-        `Đơn hàng ${updated.orderNumber} đã được hủy và hoàn lại kho.`,
+        updated.couponCode
+          ? `Đơn hàng ${updated.orderNumber} đã hủy. Mã voucher ${updated.couponCode} đã được hoàn lại vào Kho Voucher!`
+          : `Đơn hàng ${updated.orderNumber} đã được hủy và hoàn lại kho.`,
         "info",
       );
     } catch (err: unknown) {

@@ -17,6 +17,10 @@ export interface UIContextType {
   setIsAdminOrdersOpen: (open: boolean) => void;
   isAdminProductsOpen: boolean;
   setIsAdminProductsOpen: (open: boolean) => void;
+  isAdminPromotionsOpen: boolean;
+  setIsAdminPromotionsOpen: (open: boolean) => void;
+  isVoucherWalletOpen: boolean;
+  setIsVoucherWalletOpen: (open: boolean) => void;
   isAuthOpen: boolean;
   setIsAuthOpen: (open: boolean) => void;
   quickViewProduct: Product | null;
@@ -36,6 +40,8 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isAdminOrdersOpen, setIsAdminOrdersOpen] = useState(false);
   const [isAdminProductsOpen, setIsAdminProductsOpen] = useState(false);
+  const [isAdminPromotionsOpen, setIsAdminPromotionsOpen] = useState(false);
+  const [isVoucherWalletOpen, setIsVoucherWalletOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
     null,
@@ -58,6 +64,10 @@ export const UIProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsAdminOrdersOpen,
         isAdminProductsOpen,
         setIsAdminProductsOpen,
+        isAdminPromotionsOpen,
+        setIsAdminPromotionsOpen,
+        isVoucherWalletOpen,
+        setIsVoucherWalletOpen,
         isAuthOpen,
         setIsAuthOpen,
         quickViewProduct,

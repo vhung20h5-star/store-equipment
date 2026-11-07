@@ -32,8 +32,12 @@ export interface ShopContextType {
   isLookupOpen: boolean;
   isAdminOrdersOpen: boolean;
   isAdminProductsOpen: boolean;
+  isAdminPromotionsOpen: boolean;
+  isVoucherWalletOpen: boolean;
   isAuthOpen: boolean;
   currentUser: User | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
+  refreshCurrentUser: () => Promise<User | null>;
   quickViewProduct: Product | null;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
@@ -48,6 +52,8 @@ export interface ShopContextType {
   setIsLookupOpen: (open: boolean) => void;
   setIsAdminOrdersOpen: (open: boolean) => void;
   setIsAdminProductsOpen: (open: boolean) => void;
+  setIsAdminPromotionsOpen: (open: boolean) => void;
+  setIsVoucherWalletOpen: (open: boolean) => void;
   setIsAuthOpen: (open: boolean) => void;
   setQuickViewProduct: (product: Product | null) => void;
   login: (data: LoginRequest) => Promise<void>;
@@ -144,8 +150,12 @@ export const useShop = (): ShopContextType => {
     isLookupOpen: ui.isLookupOpen,
     isAdminOrdersOpen: ui.isAdminOrdersOpen,
     isAdminProductsOpen: ui.isAdminProductsOpen,
+    isAdminPromotionsOpen: ui.isAdminPromotionsOpen,
+    isVoucherWalletOpen: ui.isVoucherWalletOpen,
     isAuthOpen: ui.isAuthOpen,
     currentUser: auth.currentUser,
+    setCurrentUser: auth.setCurrentUser,
+    refreshCurrentUser: auth.refreshCurrentUser,
     quickViewProduct: ui.quickViewProduct,
     addToCart: cart.addToCart,
     removeFromCart: cart.removeFromCart,
@@ -160,6 +170,8 @@ export const useShop = (): ShopContextType => {
     setIsLookupOpen: ui.setIsLookupOpen,
     setIsAdminOrdersOpen: ui.setIsAdminOrdersOpen,
     setIsAdminProductsOpen: ui.setIsAdminProductsOpen,
+    setIsAdminPromotionsOpen: ui.setIsAdminPromotionsOpen,
+    setIsVoucherWalletOpen: ui.setIsVoucherWalletOpen,
     setIsAuthOpen: ui.setIsAuthOpen,
     setQuickViewProduct: ui.setQuickViewProduct,
     login,

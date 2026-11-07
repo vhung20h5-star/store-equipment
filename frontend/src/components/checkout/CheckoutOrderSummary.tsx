@@ -1,12 +1,19 @@
 import React from "react";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Crown } from "lucide-react";
 
-import { AppliedCoupon, formatVNDPrice } from "@/components/checkout/useCheckout";
+import {
+  AppliedCoupon,
+  formatVNDPrice,
+} from "@/components/checkout/useCheckout";
 
 interface CheckoutOrderSummaryProps {
   totalCartItems: number;
   totalCartPrice: number;
   appliedCoupon: AppliedCoupon | null;
+  voucherDiscountAmount?: number;
+  vipDiscountAmount?: number;
+  vipDiscountPercent?: number;
+  vipTierApplied?: string;
   discountAmount: number;
   finalTotal: number;
 }
@@ -15,9 +22,16 @@ export const CheckoutOrderSummary: React.FC<CheckoutOrderSummaryProps> = ({
   totalCartItems,
   totalCartPrice,
   appliedCoupon,
+  voucherDiscountAmount,
+  vipDiscountAmount = 0,
+  vipDiscountPercent = 0,
+  vipTierApplied,
   discountAmount,
   finalTotal,
 }) => {
+  const effectiveVoucherDiscount =
+    voucherDiscountAmount !== undefined ? voucherDiscountAmount : discountAmount;
+
   return (
     <div className="space-y-4">
       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-2 text-xs">
@@ -28,11 +42,27 @@ export const CheckoutOrderSummary: React.FC<CheckoutOrderSummaryProps> = ({
           </span>
         </div>
 
-        {appliedCoupon && (
+        {appliedCoupon && effectiveVoucherDiscount > 0 && (
           <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-            <span>Giảm giá ({appliedCoupon.code}):</span>
+            <span>Giảm giá Voucher ({appliedCoupon.code}):</span>
             <span className="font-semibold">
-              -{formatVNDPrice(discountAmount)}
+              -{formatVNDPrice(effectiveVoucherDiscount)}
+            </span>
+          </div>
+        )}
+
+        {vipDiscountAmount > 0 && (
+          <div className="flex justify-between text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1">
+              <Crown className="w-3.5 h-3.5" />
+              <span>
+                Đặc quyền{" "}
+                {vipTierApplied === "VIP_YEARLY" ? "VIP Năm" : "VIP Tháng"} (-
+                {vipDiscountPercent}%):
+              </span>
+            </span>
+            <span className="font-semibold">
+              -{formatVNDPrice(vipDiscountAmount)}
             </span>
           </div>
         )}
@@ -59,4 +89,3 @@ export const CheckoutOrderSummary: React.FC<CheckoutOrderSummaryProps> = ({
     </div>
   );
 };
-

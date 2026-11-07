@@ -99,7 +99,97 @@ export interface ValidatePromotionResult {
   valid: boolean;
   discountPercent: number;
   maxDiscountAmount?: number;
+  minOrderAmount?: number;
+  vipOnly?: boolean;
   message: string;
+}
+
+export type CampaignType =
+  | "ALL"
+  | "DOUBLE_DAY"
+  | "HOLIDAY"
+  | "DAILY"
+  | "VIP_ONLY"
+  | "FLASH_SALE";
+
+export interface VoucherItem {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  maxDiscountAmount?: number;
+  minOrderAmount: number;
+  campaignType: CampaignType | string;
+  eventTag?: string;
+  totalQuantity?: number | null;
+  claimedQuantity: number;
+  remainingQuantity?: number | null;
+  usedQuantity: number;
+  vipOnly: boolean;
+  requiresClaim: boolean;
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+  claimed: boolean;
+  userVoucherStatus?: "AVAILABLE" | "USED" | "EXPIRED" | null;
+  claimedAt?: string;
+  usedAt?: string;
+  orderNumber?: string;
+}
+
+export interface VipPlan {
+  id: "MONTHLY" | "YEARLY" | string;
+  name: string;
+  badge: string;
+  price: number;
+  originalPrice: number;
+  durationDays: number;
+  directDiscountPercent: number;
+  maxDiscountPerOrder: number;
+  benefits: string[];
+  giftVoucherCodes: string[];
+}
+
+export interface VipSubscriptionRecord {
+  id: number;
+  planType: string;
+  pricePaid: number;
+  discountPercent: number;
+  maxDiscountPerOrder: number;
+  paymentMethod: string;
+  status: string;
+  startedAt: string;
+  expiresAt: string;
+}
+
+export interface VipStatusResponse {
+  user?: User;
+  active: boolean;
+  tier: "NONE" | "VIP_MONTHLY" | "VIP_YEARLY" | string;
+  expiresAt?: string;
+  directDiscountPercent: number;
+  maxDiscountPerOrder: number;
+  plans: VipPlan[];
+  subscriptions: VipSubscriptionRecord[];
+}
+
+export interface CreatePromotionPayload {
+  id?: string;
+  code: string;
+  title: string;
+  description?: string;
+  discountPercent: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+  campaignType: string;
+  eventTag?: string;
+  totalQuantity?: number | null;
+  vipOnly?: boolean;
+  requiresClaim?: boolean;
+  startTime?: string;
+  endTime?: string;
+  isActive?: boolean;
 }
 
 export interface NewsletterResponse {
@@ -158,6 +248,9 @@ export interface OrderResponse {
   orderStatus: OrderStatus;
   subtotalAmount: number;
   discountAmount: number;
+  voucherDiscountAmount?: number;
+  vipDiscountAmount?: number;
+  vipTierApplied?: string;
   shippingFee: number;
   totalAmount: number;
   couponCode?: string;
@@ -186,6 +279,11 @@ export interface User {
   phone?: string;
   address?: string;
   role: string;
+  vipTier?: "NONE" | "VIP_MONTHLY" | "VIP_YEARLY" | string;
+  vipExpiresAt?: string;
+  vipActive?: boolean;
+  vipDiscountPercent?: number;
+  vipMaxDiscountAmount?: number;
   createdAt: string;
 }
 

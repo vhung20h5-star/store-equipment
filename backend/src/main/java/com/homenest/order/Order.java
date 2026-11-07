@@ -52,6 +52,15 @@ public class Order {
     @Column(name = "discount_amount", nullable = false)
     private Long discountAmount = 0L;
 
+    @Column(name = "voucher_discount_amount", nullable = false)
+    private Long voucherDiscountAmount = 0L;
+
+    @Column(name = "vip_discount_amount", nullable = false)
+    private Long vipDiscountAmount = 0L;
+
+    @Column(name = "vip_tier_applied", length = 30)
+    private String vipTierApplied;
+
     @Column(name = "shipping_fee", nullable = false)
     private Long shippingFee = 0L;
 
@@ -129,6 +138,15 @@ public class Order {
 
     public Long getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(Long discountAmount) { this.discountAmount = discountAmount; }
+
+    public Long getVoucherDiscountAmount() { return voucherDiscountAmount; }
+    public void setVoucherDiscountAmount(Long voucherDiscountAmount) { this.voucherDiscountAmount = voucherDiscountAmount; }
+
+    public Long getVipDiscountAmount() { return vipDiscountAmount; }
+    public void setVipDiscountAmount(Long vipDiscountAmount) { this.vipDiscountAmount = vipDiscountAmount; }
+
+    public String getVipTierApplied() { return vipTierApplied; }
+    public void setVipTierApplied(String vipTierApplied) { this.vipTierApplied = vipTierApplied; }
 
     public Long getShippingFee() { return shippingFee; }
     public void setShippingFee(Long shippingFee) { this.shippingFee = shippingFee; }

@@ -182,7 +182,7 @@ public class AuthServiceImpl implements AuthService {
         return mapToDTO(updated);
     }
 
-    private UserResponseDTO mapToDTO(User user) {
+    public static UserResponseDTO mapUserToDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
@@ -190,8 +190,18 @@ public class AuthServiceImpl implements AuthService {
         dto.setPhone(user.getPhone());
         dto.setAddress(user.getAddress());
         dto.setRole(user.getRole());
+        boolean activeVip = user.hasActiveVip();
+        dto.setVipTier(activeVip ? user.getVipTier() : "NONE");
+        dto.setVipExpiresAt(user.getVipExpiresAt());
+        dto.setVipActive(activeVip);
+        dto.setVipDiscountPercent(user.getActiveVipDiscountPercent());
+        dto.setVipMaxDiscountAmount(user.getActiveVipMaxDiscount());
         dto.setCreatedAt(user.getCreatedAt());
         return dto;
+    }
+
+    private UserResponseDTO mapToDTO(User user) {
+        return mapUserToDTO(user);
     }
 }
 

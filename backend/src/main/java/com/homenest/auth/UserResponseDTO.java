@@ -10,6 +10,11 @@ public class UserResponseDTO {
     private String phone;
     private String address;
     private String role;
+    private String vipTier;
+    private LocalDateTime vipExpiresAt;
+    private boolean vipActive;
+    private int vipDiscountPercent;
+    private long vipMaxDiscountAmount;
     private LocalDateTime createdAt;
 
     public UserResponseDTO() {}
@@ -31,6 +36,21 @@ public class UserResponseDTO {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getVipTier() { return vipTier; }
+    public void setVipTier(String vipTier) { this.vipTier = vipTier; }
+
+    public LocalDateTime getVipExpiresAt() { return vipExpiresAt; }
+    public void setVipExpiresAt(LocalDateTime vipExpiresAt) { this.vipExpiresAt = vipExpiresAt; }
+
+    public boolean isVipActive() { return vipActive; }
+    public void setVipActive(boolean vipActive) { this.vipActive = vipActive; }
+
+    public int getVipDiscountPercent() { return vipDiscountPercent; }
+    public void setVipDiscountPercent(int vipDiscountPercent) { this.vipDiscountPercent = vipDiscountPercent; }
+
+    public long getVipMaxDiscountAmount() { return vipMaxDiscountAmount; }
+    public void setVipMaxDiscountAmount(long vipMaxDiscountAmount) { this.vipMaxDiscountAmount = vipMaxDiscountAmount; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

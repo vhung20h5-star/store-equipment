@@ -13,6 +13,7 @@ import { useToast } from "@/context/ToastContext";
 export interface AuthContextType {
   currentUser: User | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
+  refreshCurrentUser: () => Promise<User | null>;
   login: (data: LoginRequest) => Promise<User>;
   register: (data: RegisterRequest) => Promise<User>;
   logout: () => void;
@@ -39,6 +40,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setAuthToken(null);
           setCurrentUser(null);
         });
+    }
+  }, []);
+
+  const refreshCurrentUser = useCallback(async (): Promise<User | null> => {
+    const token = getAuthToken();
+    if (!token) {
+      setCurrentUser(null);
+      return null;
+    }
+    try {
+      const user = await fetchCurrentUser();
+      setCurrentUser(user);
+      return user;
+    } catch {
+      return null;
     }
   }, []);
 
@@ -77,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         currentUser,
         setCurrentUser,
+        refreshCurrentUser,
         login,
         register,
         logout,

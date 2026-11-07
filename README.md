@@ -26,9 +26,9 @@ store-equipment/
 │   │   ├── common/            # DTO dùng chung (ApiResponse, PageResponse)
 │   │   └── exception/         # Xử lý lỗi tập trung GlobalExceptionHandler
 │   ├── src/main/resources/
-│   │   ├── db/migration/      # 7 bản migration Flyway (V1 -> V7)
+│   │   ├── db/migration/      # 9 bản migration Flyway (V1 -> V9)
 │   │   └── application.yml
-│   ├── src/test/              # 48 integration tests tự động
+│   ├── src/test/              # 52 integration tests tự động
 │   ├── pom.xml
 │   └── mvnw / mvnw.cmd
 ├── frontend/                  # Ứng dụng React 19 + Vite 8 (TypeScript)
@@ -108,7 +108,7 @@ cd backend
 docker compose up -d
 ```
 
-> **Ghi chú**: Container PostgreSQL sẽ khởi động trên cổng `5432`. Khi Backend khởi động, **Flyway** sẽ tự động chạy 7 bản migration (`V1` → `V7`) để tạo bảng và nạp dữ liệu mẫu.
+> **Ghi chú**: Container PostgreSQL sẽ khởi động trên cổng `5432`. Khi Backend khởi động, **Flyway** sẽ tự động chạy 9 bản migration (`V1` → `V9`) để tạo bảng và nạp dữ liệu mẫu.
 
 ### Bước 2: Khởi chạy Backend (Spring Boot API)
 Mở cửa sổ dòng lệnh trong thư mục `backend`:
@@ -168,15 +168,39 @@ Hệ thống có sẵn dữ liệu mẫu sau khi nạp Flyway migration:
 - Bạn cũng có thể đăng ký tài khoản mới trực tiếp trên giao diện thông qua form Đăng nhập / Đăng ký.
 
 ### 5.2. Mã giảm giá (Vouchers) mẫu
-- `HOMENEST30`: Giảm 30% (tối đa 500.000 VNĐ)
-- `HOMENEST10`: Giảm 10% (tối đa 50.000 VNĐ)
-- `FLASH20`: Giảm 20% (tối đa 150.000 VNĐ, đơn tối thiểu 200.000 VNĐ)
+- `HOMENEST30`: Giảm 30% (tối đa 1.000.000 VNĐ, công khai)
+- **Sự kiện Ngày Đôi (`DOUBLE_DAY`)**:
+  - `MEGA1111`: Giảm 40% (tối đa 1.200.000 VNĐ, đơn từ 2.000.000 VNĐ, giới hạn 50 mã)
+  - `SALE1010`: Giảm 35% (tối đa 900.000 VNĐ, đơn từ 1.500.000 VNĐ, giới hạn 60 mã)
+  - `SALE1212`: Giảm 45% (tối đa 1.500.000 VNĐ, đơn từ 3.000.000 VNĐ, giới hạn 30 mã)
+- **Đại Lễ & Tết (`HOLIDAY`)**:
+  - `LEHOI35`: Giảm 35% (tối đa 1.000.000 VNĐ, đơn từ 2.000.000 VNĐ)
+  - `NGAYLE25`: Giảm 25% (tối đa 600.000 VNĐ, đơn từ 1.000.000 VNĐ)
+- **Ưu đãi ngày thường (`DAILY`)**:
+  - `DAILY10`: Giảm 10% (tối đa 150.000 VNĐ, đơn từ 500.000 VNĐ)
+  - `DAILY12`: Giảm 12% (tối đa 250.000 VNĐ, đơn từ 1.200.000 VNĐ)
+  - `HOMENEST8`: Giảm 8% (tối đa 100.000 VNĐ, áp dụng mọi đơn hàng)
+- **Đặc quyền Hội viên VIP (`VIP_ONLY`)**:
+  - `VIPCLUB25`: Giảm 25% (tối đa 800.000 VNĐ, đơn từ 1.000.000 VNĐ)
+  - `VIPDIAMOND35`: Giảm 35% (tối đa 1.500.000 VNĐ, đơn từ 2.500.000 VNĐ)
+
+### 5.3. Gói Hội Viên VIP & Kho Voucher Cá Nhân
+- **Kho Voucher Cá Nhân (`user_vouchers`)**:
+  - Khách hàng bấm **Lưu Voucher** để trừ số lượng và giữ chắc suất trong kho.
+  - Khi thanh toán, có thể chọn nhanh từ danh sách mã đã lưu.
+  - Tự động hoàn lại voucher vào kho khi đơn hàng bị hủy (nếu mã còn hạn).
+- **Gói Hội Viên VIP**:
+  - **VIP Tháng** (99.000 VNĐ / 30 ngày): Giảm trực tiếp thêm 5% (tối đa 300.000 VNĐ/đơn) trên mọi đơn hàng.
+  - **VIP Năm Gold** (890.000 VNĐ / 365 ngày): Giảm trực tiếp thêm 8% (tối đa 600.000 VNĐ/đơn) trên mọi đơn hàng.
+  - **Cộng dồn 2 tầng ưu đãi**: Trừ Voucher trước, sau đó trừ tiếp % đặc quyền VIP trên số tiền còn lại.
+  - Tặng ngay trọn bộ Voucher VIP vào kho cá nhân ngay khi kích hoạt.
+  - Kích hoạt tức thì 1-Click mô phỏng và quản trị chiến dịch cho Admin.
 
 ---
 
 ## 6. Hướng dẫn kiểm tra tự động (Automated Testing)
 
-### 6.1. Kiểm tra Backend (48 integration tests)
+### 6.1. Kiểm tra Backend (52 integration tests)
 Backend sở hữu bộ test tích hợp toàn diện sử dụng CSDL in-memory H2, không yêu cầu bật Docker:
 
 - **Trên Windows**:

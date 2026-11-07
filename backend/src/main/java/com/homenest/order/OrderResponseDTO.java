@@ -19,6 +19,9 @@ public class OrderResponseDTO {
     private OrderStatus orderStatus;
     private Long subtotalAmount;
     private Long discountAmount;
+    private Long voucherDiscountAmount;
+    private Long vipDiscountAmount;
+    private String vipTierApplied;
     private Long shippingFee;
     private Long totalAmount;
     private String couponCode;
@@ -69,6 +72,15 @@ public class OrderResponseDTO {
 
     public Long getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(Long discountAmount) { this.discountAmount = discountAmount; }
+
+    public Long getVoucherDiscountAmount() { return voucherDiscountAmount; }
+    public void setVoucherDiscountAmount(Long voucherDiscountAmount) { this.voucherDiscountAmount = voucherDiscountAmount; }
+
+    public Long getVipDiscountAmount() { return vipDiscountAmount; }
+    public void setVipDiscountAmount(Long vipDiscountAmount) { this.vipDiscountAmount = vipDiscountAmount; }
+
+    public String getVipTierApplied() { return vipTierApplied; }
+    public void setVipTierApplied(String vipTierApplied) { this.vipTierApplied = vipTierApplied; }
 
     public Long getShippingFee() { return shippingFee; }
     public void setShippingFee(Long shippingFee) { this.shippingFee = shippingFee; }
