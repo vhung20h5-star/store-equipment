@@ -25,6 +25,8 @@ public class OrderResponseDTO {
     private Long shippingFee;
     private Long totalAmount;
     private String couponCode;
+    private Long bankCardId;
+    private String cardMasked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime cancelledAt;
@@ -90,6 +92,12 @@ public class OrderResponseDTO {
 
     public String getCouponCode() { return couponCode; }
     public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
+
+    public Long getBankCardId() { return bankCardId; }
+    public void setBankCardId(Long bankCardId) { this.bankCardId = bankCardId; }
+
+    public String getCardMasked() { return cardMasked; }
+    public void setCardMasked(String cardMasked) { this.cardMasked = cardMasked; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

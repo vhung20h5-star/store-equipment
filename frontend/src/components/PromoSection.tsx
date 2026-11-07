@@ -15,17 +15,24 @@ import {
   CheckCircle2,
   Wallet,
   Zap,
+  CreditCard,
+  Plus,
+  AlertCircle,
 } from "lucide-react";
 
 import { useShop } from "@/context/ShopContext";
 import {
+  addBankCardApi,
   claimVoucherApi,
   fetchFlashSale,
+  fetchMyBankCards,
   fetchPublicVouchers,
   fetchVipStatus,
   subscribeVipApi,
+  topUpBankCardApi,
 } from "@/services/api";
 import {
+  BankCardItem,
   CampaignType,
   FlashSalePromotion,
   VipPlan,
@@ -55,6 +62,23 @@ export const PromoSection: React.FC = () => {
   const [vipStatus, setVipStatus] = useState<VipStatusResponse | null>(null);
   const [subscribingPlan, setSubscribingPlan] = useState<string | null>(null);
   const [confirmPlan, setConfirmPlan] = useState<VipPlan | null>(null);
+
+  // Bank Card states for mandatory VIP payment
+  const [bankCards, setBankCards] = useState<BankCardItem[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [vipCvv, setVipCvv] = useState("");
+  const [vipError, setVipError] = useState<string | null>(null);
+  const [showAddCardInline, setShowAddCardInline] = useState(false);
+  const [newBankName, setNewBankName] = useState("Vietcombank");
+  const [newCardBrand, setNewCardBrand] = useState<
+    "VISA" | "MASTERCARD" | "NAPAS"
+  >("VISA");
+  const [newCardNumber, setNewCardNumber] = useState("");
+  const [newCardHolder, setNewCardHolder] = useState("");
+  const [newExpiryDate, setNewExpiryDate] = useState("12/29");
+  const [newCardCvv, setNewCardCvv] = useState("");
+  const [newInitialBalance, setNewInitialBalance] = useState("5000000");
+  const [isAddingInlineCard, setIsAddingInlineCard] = useState(false);
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -218,6 +242,99 @@ export const PromoSection: React.FC = () => {
     }
   };
 
+  const loadUserCards = useCallback(async () => {
+    if (!currentUser) {
+      setBankCards([]);
+      setSelectedCardId(null);
+      return;
+    }
+    try {
+      const cards = await fetchMyBankCards();
+      setBankCards(cards);
+      if (cards.length > 0) {
+        const def = cards.find((c) => c.isDefault) || cards[0];
+        setSelectedCardId((prev) =>
+          prev && cards.some((c) => c.id === prev) ? prev : def.id,
+        );
+        setShowAddCardInline(false);
+      } else {
+        setSelectedCardId(null);
+        setShowAddCardInline(true);
+      }
+    } catch {
+      setBankCards([]);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (confirmPlan && currentUser) {
+      setVipError(null);
+      loadUserCards();
+      if (currentUser.fullName && !newCardHolder) {
+        setNewCardHolder(
+          currentUser.fullName
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toUpperCase(),
+        );
+      }
+    }
+  }, [confirmPlan, currentUser, loadUserCards, newCardHolder]);
+
+  const handleInlineAddCard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVipError(null);
+    setIsAddingInlineCard(true);
+    try {
+      const created = await addBankCardApi({
+        bankName: newBankName,
+        cardBrand: newCardBrand,
+        cardNumber: newCardNumber.replace(/\s+/g, ""),
+        cardHolderName: newCardHolder.trim().toUpperCase(),
+        expiryDate: newExpiryDate.trim(),
+        cvv: newCardCvv.trim(),
+        initialBalance: Math.max(0, Number(newInitialBalance) || 0),
+        setAsDefault: true,
+      });
+      await loadUserCards();
+      setSelectedCardId(created.id);
+      setVipCvv(newCardCvv.trim());
+      setNewCardNumber("");
+      setNewCardCvv("");
+      setShowAddCardInline(false);
+      window.dispatchEvent(new Event("homenest:cards-updated"));
+      showToast(
+        "Liên kết thẻ thành công!",
+        `Đã thêm thẻ ${created.bankName} (${created.cardNumberMasked}).`,
+        "success",
+      );
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Không thể liên kết thẻ ngân hàng.";
+      setVipError(msg);
+    } finally {
+      setIsAddingInlineCard(false);
+    }
+  };
+
+  const handleQuickTopUp = async (cardId: number, amount: number) => {
+    try {
+      const updated = await topUpBankCardApi(cardId, amount);
+      await loadUserCards();
+      window.dispatchEvent(new Event("homenest:cards-updated"));
+      showToast(
+        "Nạp tiền thành công!",
+        `Số dư thẻ ${updated.cardNumberMasked} hiện tại: ${formatPrice(updated.balance)}`,
+        "success",
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Không thể nạp tiền.";
+      setVipError(msg);
+    }
+  };
+
   const handleConfirmSubscribeVip = async () => {
     if (!confirmPlan) return;
     if (!currentUser) {
@@ -226,23 +343,44 @@ export const PromoSection: React.FC = () => {
       return;
     }
 
+    setVipError(null);
+    if (!selectedCardId) {
+      setVipError(
+        "Gói Hội viên VIP bắt buộc thanh toán qua thẻ ngân hàng. Vui lòng chọn hoặc liên kết thẻ!",
+      );
+      return;
+    }
+    if (!vipCvv.trim()) {
+      setVipError("Vui lòng nhập mã bảo mật CVV của thẻ để xác thực thanh toán.");
+      return;
+    }
+
     setSubscribingPlan(confirmPlan.id);
     try {
-      const updatedVip = await subscribeVipApi(confirmPlan.id, "QR_INSTANT");
+      const updatedVip = await subscribeVipApi(
+        confirmPlan.id,
+        selectedCardId,
+        vipCvv.trim(),
+      );
       setVipStatus(updatedVip);
       await refreshCurrentUser();
       await loadPromoHubData();
       window.dispatchEvent(new Event("homenest:vouchers-updated"));
+      window.dispatchEvent(new Event("homenest:cards-updated"));
       setConfirmPlan(null);
+      setVipCvv("");
       showToast(
-        "Kích hoạt Hội viên VIP thành công!",
-        `Bạn được giảm trực tiếp ${updatedVip.directDiscountPercent}% mọi đơn hàng & nhận trọn bộ Voucher VIP vào kho!`,
+        "Thanh toán & Kích hoạt Hội viên VIP thành công!",
+        `Đã trừ ${formatPrice(confirmPlan.price)} từ thẻ ngân hàng, kích hoạt ưu đãi -${updatedVip.directDiscountPercent}% & tặng trọn bộ Voucher VIP vào kho!`,
         "success",
       );
     } catch (err: unknown) {
       const msg =
-        err instanceof Error ? err.message : "Không thể đăng ký gói VIP.";
-      showToast("Lỗi đăng ký VIP", msg, "warning");
+        err instanceof Error
+          ? err.message
+          : "Không thể thanh toán gói VIP. Vui lòng kiểm tra số dư thẻ hoặc mã CVV.";
+      setVipError(msg);
+      showToast("Thanh toán thất bại", msg, "warning");
     } finally {
       setSubscribingPlan(null);
     }
@@ -858,25 +996,25 @@ export const PromoSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Simulated Instant VIP Payment Confirmation Modal */}
+      {/* Mandatory Bank Card VIP Payment Confirmation Modal */}
       {confirmPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div
             role="presentation"
             className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => !subscribingPlan && setConfirmPlan(null)}
           />
-          <div className="relative z-10 w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5">
+          <div className="relative z-10 w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                 <Crown className="w-6 h-6" />
               </div>
               <div>
                 <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                  Xác Nhận Kích Hoạt {confirmPlan.name}
+                  Thanh Toán Kích Hoạt {confirmPlan.name}
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Thanh toán mô phỏng 1-Click • Kích hoạt đặc quyền ngay lập tức
+                  Gói Hội viên VIP bắt buộc thanh toán bằng thẻ ngân hàng liên kết
                 </p>
               </div>
             </div>
@@ -901,14 +1039,246 @@ export const PromoSection: React.FC = () => {
                 </span>
               </div>
               <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm font-extrabold">
-                <span>Tổng thanh toán:</span>
+                <span>Số tiền cần thanh toán:</span>
                 <span className="text-amber-600 dark:text-amber-400">
                   {formatPrice(confirmPlan.price)}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
+            {vipError && (
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                <span>{vipError}</span>
+              </div>
+            )}
+
+            {/* Card Selection or Inline Add Card */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                  <CreditCard className="w-4 h-4 text-sky-600" />
+                  <span>Thẻ Ngân Hàng Thanh Toán</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAddCardInline((prev) => !prev)}
+                  className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>
+                    {showAddCardInline
+                      ? "Chọn thẻ đã lưu"
+                      : "Thêm thẻ ngân hàng mới"}
+                  </span>
+                </button>
+              </div>
+
+              {showAddCardInline || bankCards.length === 0 ? (
+                <form
+                  onSubmit={handleInlineAddCard}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-sky-200 dark:border-sky-800/60 space-y-3"
+                >
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Liên kết thẻ ngân hàng mới để thanh toán gói VIP
+                  </p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Ngân hàng
+                      </label>
+                      <select
+                        value={newBankName}
+                        onChange={(e) => setNewBankName(e.target.value)}
+                        className="w-full px-2.5 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                      >
+                        {[
+                          "Vietcombank",
+                          "Techcombank",
+                          "MB Bank",
+                          "VPBank",
+                          "ACB",
+                          "BIDV",
+                        ].map((b) => (
+                          <option key={b} value={b}>
+                            {b}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Loại thẻ
+                      </label>
+                      <select
+                        value={newCardBrand}
+                        onChange={(e) =>
+                          setNewCardBrand(
+                            e.target.value as "VISA" | "MASTERCARD" | "NAPAS",
+                          )
+                        }
+                        className="w-full px-2.5 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                      >
+                        <option value="VISA">VISA</option>
+                        <option value="MASTERCARD">Mastercard</option>
+                        <option value="NAPAS">NAPAS</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      Số thẻ (12 - 19 chữ số)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="VD: 4111 2222 3333 8899"
+                      value={newCardNumber}
+                      onChange={(e) => setNewCardNumber(e.target.value)}
+                      className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Chủ thẻ (In hoa)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="NGUYEN VAN A"
+                        value={newCardHolder}
+                        onChange={(e) =>
+                          setNewCardHolder(e.target.value.toUpperCase())
+                        }
+                        className="w-full px-3 py-2 text-xs uppercase rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Số dư nạp ban đầu (VNĐ)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={100000}
+                        value={newInitialBalance}
+                        onChange={(e) => setNewInitialBalance(e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Hạn thẻ (MM/YY)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="12/29"
+                        value={newExpiryDate}
+                        onChange={(e) => setNewExpiryDate(e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                        Mã bảo mật CVV
+                      </label>
+                      <input
+                        type="password"
+                        maxLength={6}
+                        placeholder="VD: 686"
+                        value={newCardCvv}
+                        onChange={(e) => setNewCardCvv(e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="sm"
+                    isDisabled={isAddingInlineCard}
+                    className="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs py-2 rounded-xl cursor-pointer"
+                  >
+                    {isAddingInlineCard
+                      ? "Đang liên kết thẻ..."
+                      : "Lưu & Sử dụng thẻ này"}
+                  </Button>
+                </form>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      Chọn thẻ đã liên kết
+                    </label>
+                    <select
+                      value={selectedCardId ?? ""}
+                      onChange={(e) =>
+                        setSelectedCardId(Number(e.target.value))
+                      }
+                      className="w-full px-3 py-2.5 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                    >
+                      {bankCards.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.bankName} ({c.cardBrand}) • {c.cardNumberMasked} —
+                          Số dư: {formatPrice(c.balance)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      Nhập mã bảo mật CVV của thẻ để xác nhận trừ tiền
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={6}
+                      placeholder="Nhập 3-6 chữ số CVV (VD: 686)"
+                      value={vipCvv}
+                      onChange={(e) => setVipCvv(e.target.value)}
+                      className="w-full px-3 py-2.5 text-xs font-mono rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                    />
+                  </div>
+
+                  {(() => {
+                    const currentCard = bankCards.find(
+                      (c) => c.id === selectedCardId,
+                    );
+                    if (currentCard && currentCard.balance < confirmPlan.price) {
+                      return (
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200">
+                          <span>
+                            Số dư thẻ ({formatPrice(currentCard.balance)}) không
+                            đủ để thanh toán {formatPrice(confirmPlan.price)}.
+                          </span>
+                          <Button
+                            size="sm"
+                            onPress={() =>
+                              handleQuickTopUp(currentCard.id, 1000000)
+                            }
+                            className="bg-emerald-600 text-white font-bold text-xs px-3 py-1 rounded-lg cursor-pointer shrink-0"
+                          >
+                            Nạp +1.000.000đ
+                          </Button>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
               <Button
                 variant="ghost"
                 isDisabled={Boolean(subscribingPlan)}
@@ -918,13 +1288,13 @@ export const PromoSection: React.FC = () => {
                 Hủy bỏ
               </Button>
               <Button
-                isDisabled={Boolean(subscribingPlan)}
+                isDisabled={Boolean(subscribingPlan) || bankCards.length === 0}
                 onPress={handleConfirmSubscribeVip}
-                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-md"
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-md disabled:opacity-50"
               >
                 {subscribingPlan
-                  ? "Đang kích hoạt..."
-                  : "Thanh toán & Kích hoạt ngay"}
+                  ? "Đang thanh toán..."
+                  : `Trả ${formatPrice(confirmPlan.price)} & Kích hoạt VIP`}
               </Button>
             </div>
           </div>

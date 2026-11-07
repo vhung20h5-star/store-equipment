@@ -30,7 +30,13 @@ public class VipSubscription {
     private Long maxDiscountPerOrder;
 
     @Column(name = "payment_method", nullable = false, length = 50)
-    private String paymentMethod = "QR_INSTANT";
+    private String paymentMethod = "BANK_CARD";
+
+    @Column(name = "bank_card_id")
+    private Long bankCardId;
+
+    @Column(name = "card_masked", length = 100)
+    private String cardMasked;
 
     @Column(nullable = false, length = 30)
     private String status = "ACTIVE";
@@ -66,6 +72,12 @@ public class VipSubscription {
 
     public String getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
+    public Long getBankCardId() { return bankCardId; }
+    public void setBankCardId(Long bankCardId) { this.bankCardId = bankCardId; }
+
+    public String getCardMasked() { return cardMasked; }
+    public void setCardMasked(String cardMasked) { this.cardMasked = cardMasked; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

@@ -21,6 +21,8 @@ import com.homenest.common.PageResponse;
 import com.homenest.exception.AccessDeniedException;
 import com.homenest.exception.InsufficientStockException;
 import com.homenest.exception.ResourceNotFoundException;
+import com.homenest.payment.BankCard;
+import com.homenest.payment.CardPaymentService;
 import com.homenest.promotion.Promotion;
 import com.homenest.promotion.PromotionRepository;
 import com.homenest.promotion.UserVoucher;
@@ -34,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final PromotionRepository promotionRepository;
     private final UserVoucherRepository userVoucherRepository;
     private final UserRepository userRepository;
+    private final CardPaymentService cardPaymentService;
     private final SecureRandom random = new SecureRandom();
 
     public OrderServiceImpl(
@@ -41,12 +44,14 @@ public class OrderServiceImpl implements OrderService {
             ProductRepository productRepository,
             PromotionRepository promotionRepository,
             UserVoucherRepository userVoucherRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            CardPaymentService cardPaymentService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.promotionRepository = promotionRepository;
         this.userVoucherRepository = userVoucherRepository;
         this.userRepository = userRepository;
+        this.cardPaymentService = cardPaymentService;
     }
 
     @Override
@@ -223,6 +228,24 @@ public class OrderServiceImpl implements OrderService {
         long totalAmount = Math.max(0L, subtotal - discountAmount);
         order.setTotalAmount(totalAmount);
 
+        if (order.getPaymentMethod() == PaymentMethod.BANK_CARD) {
+            if (currentUser == null) {
+                throw new AccessDeniedException("Vui lòng đăng nhập để thanh toán bằng thẻ ngân hàng đã liên kết.");
+            }
+            BankCard paidCard = cardPaymentService.charge(
+                    currentUser,
+                    request.getBankCardId(),
+                    request.getCardCvv(),
+                    totalAmount,
+                    "ORDER_PAYMENT",
+                    "Thanh toán đơn hàng " + generatedOrderNumber,
+                    generatedOrderNumber
+            );
+            order.setPaymentStatus(PaymentStatus.PAID);
+            order.setBankCardId(paidCard.getId());
+            order.setCardMasked(paidCard.getBankName() + " " + paidCard.getCardNumberMasked());
+        }
+
         Order savedOrder = orderRepository.save(order);
         return mapToDTO(savedOrder);
     }
@@ -348,6 +371,14 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderStatus(OrderStatus.CANCELLED);
         if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            if (order.getPaymentMethod() == PaymentMethod.BANK_CARD && order.getBankCardId() != null) {
+                cardPaymentService.refund(
+                        order.getBankCardId(),
+                        order.getTotalAmount(),
+                        "Hoàn tiền hủy đơn hàng " + order.getOrderNumber(),
+                        order.getOrderNumber()
+                );
+            }
             order.setPaymentStatus(PaymentStatus.REFUNDED);
         }
         order.setCancelledAt(now);
@@ -474,6 +505,8 @@ public class OrderServiceImpl implements OrderService {
         dto.setNotes(order.getNotes());
         dto.setPaymentMethod(order.getPaymentMethod());
         dto.setPaymentStatus(order.getPaymentStatus());
+        dto.setBankCardId(order.getBankCardId());
+        dto.setCardMasked(order.getCardMasked());
         dto.setOrderStatus(order.getOrderStatus());
         dto.setSubtotalAmount(order.getSubtotalAmount());
         dto.setDiscountAmount(order.getDiscountAmount());

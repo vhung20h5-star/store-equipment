@@ -31,6 +31,12 @@ export const CheckoutModal: React.FC = () => {
     setNotes,
     paymentMethod,
     setPaymentMethod,
+    bankCards,
+    selectedCardId,
+    setSelectedCardId,
+    cardCvv,
+    setCardCvv,
+    openWalletCards,
     couponInput,
     setCouponInput,
     isApplyingCoupon,
@@ -150,6 +156,12 @@ export const CheckoutModal: React.FC = () => {
                   <PaymentMethodSelector
                     paymentMethod={paymentMethod}
                     setPaymentMethod={setPaymentMethod}
+                    bankCards={bankCards}
+                    selectedCardId={selectedCardId}
+                    setSelectedCardId={setSelectedCardId}
+                    cardCvv={cardCvv}
+                    setCardCvv={setCardCvv}
+                    openWalletCards={openWalletCards}
                   />
 
                   <VoucherInputSection

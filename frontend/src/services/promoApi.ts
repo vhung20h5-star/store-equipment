@@ -1,4 +1,7 @@
 import {
+  BankCardItem,
+  CardTransactionItem,
+  CreateBankCardPayload,
   CreatePromotionPayload,
   FlashSalePromotion,
   ValidatePromotionResult,
@@ -364,7 +367,8 @@ export async function fetchVipStatus(): Promise<VipStatusResponse> {
 
 export async function subscribeVipApi(
   planType: string,
-  paymentMethod: string = "QR_INSTANT",
+  cardId: number,
+  cvv: string,
 ): Promise<VipStatusResponse> {
   const res = await fetch(`${API_BASE_URL}/promotions/vip/subscribe`, {
     method: "POST",
@@ -372,10 +376,79 @@ export async function subscribeVipApi(
       "Content-Type": "application/json",
       Accept: "application/json",
     }),
-    body: JSON.stringify({ planType, paymentMethod }),
+    body: JSON.stringify({ planType, cardId, cvv }),
   });
 
   return await handleResponse<VipStatusResponse>(res);
+}
+
+export async function fetchMyBankCards(): Promise<BankCardItem[]> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards`, {
+    method: "GET",
+    headers: getAuthHeaders({ Accept: "application/json" }),
+  });
+
+  return await handleResponse<BankCardItem[]>(res);
+}
+
+export async function fetchMyCardTransactions(): Promise<CardTransactionItem[]> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards/transactions`, {
+    method: "GET",
+    headers: getAuthHeaders({ Accept: "application/json" }),
+  });
+
+  return await handleResponse<CardTransactionItem[]>(res);
+}
+
+export async function addBankCardApi(
+  payload: CreateBankCardPayload,
+): Promise<BankCardItem> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards`, {
+    method: "POST",
+    headers: getAuthHeaders({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+    body: JSON.stringify(payload),
+  });
+
+  return await handleResponse<BankCardItem>(res);
+}
+
+export async function topUpBankCardApi(
+  cardId: number,
+  amount: number,
+): Promise<BankCardItem> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards/${cardId}/top-up`, {
+    method: "POST",
+    headers: getAuthHeaders({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }),
+    body: JSON.stringify({ amount }),
+  });
+
+  return await handleResponse<BankCardItem>(res);
+}
+
+export async function setDefaultBankCardApi(
+  cardId: number,
+): Promise<BankCardItem> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards/${cardId}/default`, {
+    method: "PATCH",
+    headers: getAuthHeaders({ Accept: "application/json" }),
+  });
+
+  return await handleResponse<BankCardItem>(res);
+}
+
+export async function deleteBankCardApi(cardId: number): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/payment/cards/${cardId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders({ Accept: "application/json" }),
+  });
+
+  await handleResponse<null>(res);
 }
 
 export async function fetchAdminPromotions(): Promise<VoucherItem[]> {

@@ -3,10 +3,16 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useShop } from "@/context/ShopContext";
 import {
   createOrder,
+  fetchMyBankCards,
   fetchMyVouchers,
   validatePromotionCode,
 } from "@/services/api";
-import { PaymentMethod, OrderResponse, VoucherItem } from "@/types";
+import {
+  BankCardItem,
+  PaymentMethod,
+  OrderResponse,
+  VoucherItem,
+} from "@/types";
 
 export interface AppliedCoupon {
   code: string;
@@ -29,6 +35,7 @@ export const useCheckout = () => {
     clearCart,
     isCheckoutOpen,
     setIsCheckoutOpen,
+    setIsVoucherWalletOpen,
     showToast,
     totalCartPrice,
     totalCartItems,
@@ -43,10 +50,36 @@ export const useCheckout = () => {
   const [notes, setNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
 
-  // Saved vouchers from user wallet
+  // Saved vouchers & bank cards from user wallet
   const [savedVouchers, setSavedVouchers] = useState<VoucherItem[]>([]);
+  const [bankCards, setBankCards] = useState<BankCardItem[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [cardCvv, setCardCvv] = useState("");
 
-  // Auto-fill from logged in user & load saved vouchers
+  const loadCards = useCallback(() => {
+    if (!currentUser) {
+      setBankCards([]);
+      setSelectedCardId(null);
+      return;
+    }
+    fetchMyBankCards()
+      .then((cards) => {
+        setBankCards(cards);
+        if (cards.length > 0) {
+          const def = cards.find((c) => c.isDefault) || cards[0];
+          setSelectedCardId((prev) =>
+            prev && cards.some((c) => c.id === prev) ? prev : def.id,
+          );
+        } else {
+          setSelectedCardId(null);
+        }
+      })
+      .catch(() => {
+        setBankCards([]);
+      });
+  }, [currentUser]);
+
+  // Auto-fill from logged in user & load saved vouchers + bank cards
   useEffect(() => {
     if (currentUser && isCheckoutOpen) {
       if (currentUser.fullName) setCustomerName(currentUser.fullName);
@@ -63,10 +96,21 @@ export const useCheckout = () => {
         .catch(() => {
           setSavedVouchers([]);
         });
+
+      loadCards();
     } else if (!currentUser) {
       setSavedVouchers([]);
+      setBankCards([]);
+      setSelectedCardId(null);
     }
-  }, [currentUser, isCheckoutOpen]);
+  }, [currentUser, isCheckoutOpen, loadCards]);
+
+  useEffect(() => {
+    const onCardsUpdated = () => loadCards();
+    window.addEventListener("homenest:cards-updated", onCardsUpdated);
+    return () =>
+      window.removeEventListener("homenest:cards-updated", onCardsUpdated);
+  }, [loadCards]);
 
   // Voucher states
   const [couponInput, setCouponInput] = useState("");
@@ -220,6 +264,26 @@ export const useCheckout = () => {
         setSubmitError("Giỏ hàng đang trống, không thể tiến hành đặt hàng.");
         return;
       }
+      if (paymentMethod === "BANK_CARD") {
+        if (!currentUser) {
+          setSubmitError(
+            "Vui lòng đăng nhập để thanh toán bằng thẻ ngân hàng đã liên kết.",
+          );
+          return;
+        }
+        if (!selectedCardId) {
+          setSubmitError(
+            "Vui lòng chọn thẻ ngân hàng liên kết để thanh toán đơn hàng.",
+          );
+          return;
+        }
+        if (!cardCvv.trim()) {
+          setSubmitError(
+            "Vui lòng nhập mã bảo mật CVV của thẻ để xác nhận thanh toán.",
+          );
+          return;
+        }
+      }
 
       setIsSubmitting(true);
       try {
@@ -230,6 +294,12 @@ export const useCheckout = () => {
           shippingAddress: shippingAddress.trim(),
           notes: notes.trim() || undefined,
           paymentMethod,
+          bankCardId:
+            paymentMethod === "BANK_CARD" && selectedCardId
+              ? selectedCardId
+              : undefined,
+          cardCvv:
+            paymentMethod === "BANK_CARD" ? cardCvv.trim() : undefined,
           couponCode: appliedCoupon?.code,
           items: cart.map((item) => ({
             productId: item.product.id,
@@ -240,8 +310,10 @@ export const useCheckout = () => {
         const res = await createOrder(orderData);
 
         setOrderSuccess(res);
+        setCardCvv("");
         clearCart();
         window.dispatchEvent(new Event("homenest:vouchers-updated"));
+        window.dispatchEvent(new Event("homenest:cards-updated"));
         showToast(
           "Đặt hàng thành công!",
           `Mã đơn hàng của bạn là: ${res.orderNumber}`,
@@ -266,6 +338,9 @@ export const useCheckout = () => {
       shippingAddress,
       notes,
       paymentMethod,
+      selectedCardId,
+      cardCvv,
+      currentUser,
       appliedCoupon,
       cart,
       clearCart,
@@ -323,6 +398,12 @@ export const useCheckout = () => {
     setNotes,
     paymentMethod,
     setPaymentMethod,
+    bankCards,
+    selectedCardId,
+    setSelectedCardId,
+    cardCvv,
+    setCardCvv,
+    openWalletCards: () => setIsVoucherWalletOpen(true),
     couponInput,
     setCouponInput,
     isApplyingCoupon,

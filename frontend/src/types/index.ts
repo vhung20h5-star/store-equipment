@@ -158,9 +158,48 @@ export interface VipSubscriptionRecord {
   discountPercent: number;
   maxDiscountPerOrder: number;
   paymentMethod: string;
+  bankCardId?: number;
+  cardMasked?: string;
   status: string;
   startedAt: string;
   expiresAt: string;
+}
+
+export interface BankCardItem {
+  id: number;
+  bankName: string;
+  cardBrand: "VISA" | "MASTERCARD" | "NAPAS" | string;
+  cardLast4: string;
+  cardNumberMasked: string;
+  cardHolderName: string;
+  expiryDate: string;
+  balance: number;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface CardTransactionItem {
+  id: number;
+  cardId: number;
+  bankName: string;
+  cardNumberMasked: string;
+  type: "TOP_UP" | "VIP_PAYMENT" | "ORDER_PAYMENT" | "REFUND" | string;
+  amount: number;
+  balanceAfter: number;
+  description: string;
+  referenceCode?: string;
+  createdAt: string;
+}
+
+export interface CreateBankCardPayload {
+  bankName: string;
+  cardBrand: "VISA" | "MASTERCARD" | "NAPAS" | string;
+  cardNumber: string;
+  cardHolderName: string;
+  expiryDate: string;
+  cvv: string;
+  initialBalance?: number;
+  setAsDefault?: boolean;
 }
 
 export interface VipStatusResponse {
@@ -199,7 +238,7 @@ export interface NewsletterResponse {
   message: string;
 }
 
-export type PaymentMethod = "COD" | "BANK_TRANSFER";
+export type PaymentMethod = "COD" | "BANK_TRANSFER" | "BANK_CARD";
 export type PaymentStatus = "PENDING" | "PAID" | "REFUNDED";
 export type OrderStatus =
   | "CONFIRMED"
@@ -220,6 +259,8 @@ export interface CreateOrderRequest {
   shippingAddress: string;
   notes?: string;
   paymentMethod?: PaymentMethod;
+  bankCardId?: number;
+  cardCvv?: string;
   couponCode?: string;
   items: OrderItemRequest[];
 }
@@ -245,6 +286,8 @@ export interface OrderResponse {
   notes?: string;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
+  bankCardId?: number;
+  cardMasked?: string;
   orderStatus: OrderStatus;
   subtotalAmount: number;
   discountAmount: number;

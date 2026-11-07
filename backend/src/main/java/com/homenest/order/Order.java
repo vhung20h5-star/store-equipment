@@ -70,6 +70,12 @@ public class Order {
     @Column(name = "coupon_code", length = 50)
     private String couponCode;
 
+    @Column(name = "bank_card_id")
+    private Long bankCardId;
+
+    @Column(name = "card_masked", length = 100)
+    private String cardMasked;
+
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
@@ -156,6 +162,12 @@ public class Order {
 
     public String getCouponCode() { return couponCode; }
     public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
+
+    public Long getBankCardId() { return bankCardId; }
+    public void setBankCardId(Long bankCardId) { this.bankCardId = bankCardId; }
+
+    public String getCardMasked() { return cardMasked; }
+    public void setCardMasked(String cardMasked) { this.cardMasked = cardMasked; }
 
     public LocalDateTime getCancelledAt() { return cancelledAt; }
     public void setCancelledAt(LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }

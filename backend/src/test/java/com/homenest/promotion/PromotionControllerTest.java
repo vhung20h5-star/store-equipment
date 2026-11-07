@@ -147,21 +147,104 @@ class PromotionControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("đã lưu mã voucher")));
 
-        // 3. Subscribe to VIP YEARLY plan -> activates 8% direct discount & automatically gifts VIP vouchers
+        // 3. Mandatory Bank Card Payment for VIP Subscription:
+        // 3a. Cannot subscribe to VIP without a valid cardId & CVV
+        mockMvc.perform(post("/api/v1/promotions/vip/subscribe")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "planType": "YEARLY"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        // 3b. Link a new Bank Card with initial balance 500,000đ (not enough for 890,000đ YEARLY plan yet)
+        MvcResult addCardRes = mockMvc.perform(post("/api/v1/payment/cards")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "bankName": "Vietcombank",
+                                    "cardBrand": "VISA",
+                                    "cardNumber": "4111222233338899",
+                                    "cardHolderName": "KHACH SAN SALE VIP",
+                                    "expiryDate": "12/29",
+                                    "cvv": "686",
+                                    "initialBalance": 500000,
+                                    "setAsDefault": true
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.cardLast4", is("8899")))
+                .andExpect(jsonPath("$.data.balance", is(500000)))
+                .andReturn();
+
+        Number cardIdNum = JsonPath.read(addCardRes.getResponse().getContentAsString(), "$.data.id");
+        long cardId = cardIdNum.longValue();
+
+        // 3c. Attempt VIP subscription with wrong CVV -> must be rejected
         mockMvc.perform(post("/api/v1/promotions/vip/subscribe")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                     "planType": "YEARLY",
-                                    "paymentMethod": "QR_INSTANT"
+                                    "cardId": %d,
+                                    "cvv": "999"
+                                }
+                                """.formatted(cardId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("CVV")));
+
+        // 3d. Attempt VIP subscription with insufficient balance (500,000đ < 890,000đ) -> must be rejected
+        mockMvc.perform(post("/api/v1/promotions/vip/subscribe")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "planType": "YEARLY",
+                                    "cardId": %d,
+                                    "cvv": "686"
+                                }
+                                """.formatted(cardId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Số dư thẻ không đủ")));
+
+        // 3e. Top up the bank card with +10,000,000đ -> balance becomes 10,500,000đ
+        mockMvc.perform(post("/api/v1/payment/cards/" + cardId + "/top-up")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "amount": 10000000
                                 }
                                 """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.balance", is(10500000)));
+
+        // 3f. Subscribe to VIP YEARLY plan using valid card & CVV -> deducts 890,000đ (remaining 9,610,000đ) & activates VIP
+        mockMvc.perform(post("/api/v1/promotions/vip/subscribe")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "planType": "YEARLY",
+                                    "cardId": %d,
+                                    "cvv": "686"
+                                }
+                                """.formatted(cardId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.data.active", is(true)))
                 .andExpect(jsonPath("$.data.tier", is("VIP_YEARLY")))
                 .andExpect(jsonPath("$.data.directDiscountPercent", is(8)));
+
+        // Verify card balance was deducted to 9,610,000đ
+        mockMvc.perform(get("/api/v1/payment/cards")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].balance", is(9610000)));
 
         // Verify my-vouchers now contains MEGA1111 as well as gifted VIPCLUB25 and VIPDIAMOND35
         mockMvc.perform(get("/api/v1/promotions/my-vouchers")
@@ -169,13 +252,15 @@ class PromotionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[*].code", hasItems("MEGA1111", "VIPCLUB25", "VIPDIAMOND35")));
 
-        // 4. Create an order using claimed MEGA1111 voucher -> stacks MEGA1111 (40% capped at 1,200,000) + VIP_YEARLY (8% on remaining)
+        // 4. Create an order paid with BANK_CARD using claimed MEGA1111 voucher -> stacks MEGA1111 + VIP_YEARLY and deducts card balance
         String orderPayload = """
                 {
                     "customerName": "Khách Săn Sale VIP",
                     "customerPhone": "0911223344",
                     "shippingAddress": "88 Nguyễn Huệ, Quận 1, TP.HCM",
-                    "paymentMethod": "COD",
+                    "paymentMethod": "BANK_CARD",
+                    "bankCardId": %d,
+                    "cardCvv": "686",
                     "couponCode": "MEGA1111",
                     "items": [
                         {
@@ -184,13 +269,16 @@ class PromotionControllerTest {
                         }
                     ]
                 }
-                """;
+                """.formatted(cardId);
 
         MvcResult orderRes = mockMvc.perform(post("/api/v1/orders")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(orderPayload))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.paymentMethod", is("BANK_CARD")))
+                .andExpect(jsonPath("$.data.paymentStatus", is("PAID")))
+                .andExpect(jsonPath("$.data.cardMasked", containsString("8899")))
                 .andExpect(jsonPath("$.data.couponCode", is("MEGA1111")))
                 .andExpect(jsonPath("$.data.voucherDiscountAmount", greaterThan(0)))
                 .andExpect(jsonPath("$.data.vipDiscountAmount", greaterThan(0)))
@@ -207,7 +295,7 @@ class PromotionControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("đã sử dụng")));
 
-        // 5. Cancel the order -> MEGA1111 is automatically restored to AVAILABLE in user's wallet!
+        // 5. Cancel the order -> MEGA1111 is automatically restored to AVAILABLE AND totalAmount is refunded to the bank card!
         mockMvc.perform(post("/api/v1/orders/" + orderNumber + "/cancel")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -217,7 +305,14 @@ class PromotionControllerTest {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.orderStatus", is("CANCELLED")));
+                .andExpect(jsonPath("$.data.orderStatus", is("CANCELLED")))
+                .andExpect(jsonPath("$.data.paymentStatus", is("REFUNDED")));
+
+        // Verify card balance is refunded back to 9,610,000đ
+        mockMvc.perform(get("/api/v1/payment/cards")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].balance", is(9610000)));
 
         // Validate MEGA1111 is valid/AVAILABLE again for this user
         mockMvc.perform(post("/api/v1/promotions/validate")

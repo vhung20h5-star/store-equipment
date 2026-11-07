@@ -15,6 +15,8 @@ import com.homenest.catalog.ProductResponseDTO;
 import com.homenest.catalog.ProductService;
 import com.homenest.exception.AccessDeniedException;
 import com.homenest.exception.ResourceNotFoundException;
+import com.homenest.payment.BankCard;
+import com.homenest.payment.CardPaymentService;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,19 +27,22 @@ public class PromotionServiceImpl implements PromotionService {
     private final VipSubscriptionRepository vipSubscriptionRepository;
     private final UserRepository userRepository;
     private final ProductService productService;
+    private final CardPaymentService cardPaymentService;
 
     public PromotionServiceImpl(
             PromotionRepository promotionRepository,
             UserVoucherRepository userVoucherRepository,
             VipSubscriptionRepository vipSubscriptionRepository,
             UserRepository userRepository,
-            ProductService productService
+            ProductService productService,
+            CardPaymentService cardPaymentService
     ) {
         this.promotionRepository = promotionRepository;
         this.userVoucherRepository = userVoucherRepository;
         this.vipSubscriptionRepository = vipSubscriptionRepository;
         this.userRepository = userRepository;
         this.productService = productService;
+        this.cardPaymentService = cardPaymentService;
     }
 
     @Override
@@ -260,6 +265,19 @@ public class PromotionServiceImpl implements PromotionService {
             throw new IllegalArgumentException("Gói VIP không hợp lệ. Vui lòng chọn MONTHLY (Gói Tháng) hoặc YEARLY (Gói Năm).");
         }
 
+        // Mandatory payment: charge the selected bank card (CVV + balance verified) BEFORE activating VIP.
+        // Any failure throws and rolls back the whole transaction, so VIP is never granted for free.
+        String planLabel = "MONTHLY".equals(planType) ? "Gói VIP Tháng (30 ngày)" : "Gói VIP Năm Gold (365 ngày)";
+        BankCard paidCard = cardPaymentService.charge(
+                user,
+                request.getCardId(),
+                request.getCvv(),
+                price,
+                "VIP_PAYMENT",
+                "Thanh toán " + planLabel + " HomeNest",
+                "VIP-" + planType
+        );
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime baseStart = (user.hasActiveVip() && user.getVipExpiresAt() != null)
                 ? user.getVipExpiresAt()
@@ -282,7 +300,9 @@ public class PromotionServiceImpl implements PromotionService {
         sub.setPricePaid(price);
         sub.setDiscountPercent(discountPercent);
         sub.setMaxDiscountPerOrder(maxDiscountPerOrder);
-        sub.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod().trim().toUpperCase() : "QR_INSTANT");
+        sub.setPaymentMethod("BANK_CARD");
+        sub.setBankCardId(paidCard.getId());
+        sub.setCardMasked(paidCard.getBankName() + " " + paidCard.getCardNumberMasked());
         sub.setStatus("ACTIVE");
         sub.setStartedAt(now);
         sub.setExpiresAt(newExpiresAt);
@@ -646,6 +666,7 @@ public class PromotionServiceImpl implements PromotionService {
                         dto.setDiscountPercent(sub.getDiscountPercent());
                         dto.setMaxDiscountPerOrder(sub.getMaxDiscountPerOrder());
                         dto.setPaymentMethod(sub.getPaymentMethod());
+                        dto.setCardMasked(sub.getCardMasked());
                         dto.setStatus(sub.getExpiresAt().isAfter(LocalDateTime.now()) ? "ACTIVE" : "EXPIRED");
                         dto.setStartedAt(sub.getStartedAt());
                         dto.setExpiresAt(sub.getExpiresAt());

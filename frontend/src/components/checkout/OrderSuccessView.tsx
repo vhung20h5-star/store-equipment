@@ -95,6 +95,14 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
                 <Banknote className="w-4 h-4 text-emerald-600" />
                 <span>Thanh toán khi nhận hàng (COD)</span>
               </>
+            ) : orderSuccess.paymentMethod === "BANK_CARD" ? (
+              <>
+                <CreditCard className="w-4 h-4 text-amber-500" />
+                <span>
+                  Đã thanh toán qua thẻ{" "}
+                  {orderSuccess.cardMasked || "Ngân hàng"}
+                </span>
+              </>
             ) : (
               <>
                 <CreditCard className="w-4 h-4 text-sky-600" />

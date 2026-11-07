@@ -25,6 +25,7 @@ public class VipStatusResponseDTO {
         private Integer discountPercent;
         private Long maxDiscountPerOrder;
         private String paymentMethod;
+        private String cardMasked;
         private String status;
         private LocalDateTime startedAt;
         private LocalDateTime expiresAt;
@@ -48,6 +49,9 @@ public class VipStatusResponseDTO {
 
         public String getPaymentMethod() { return paymentMethod; }
         public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
+        public String getCardMasked() { return cardMasked; }
+        public void setCardMasked(String cardMasked) { this.cardMasked = cardMasked; }
 
         public String getStatus() { return status; }
         public void setStatus(String status) { this.status = status; }
