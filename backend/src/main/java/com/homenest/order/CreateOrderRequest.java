@@ -26,6 +26,12 @@ public class CreateOrderRequest {
 
     private String couponCode;
 
+    /** Required when paymentMethod = BANK_CARD */
+    private Long bankCardId;
+
+    /** CVV/PIN of the selected bank card, required when paymentMethod = BANK_CARD */
+    private String cardCvv;
+
     @NotEmpty(message = "Giỏ hàng không được để trống")
     @Valid
     private List<OrderItemRequest> items;
@@ -52,6 +58,12 @@ public class CreateOrderRequest {
 
     public String getCouponCode() { return couponCode; }
     public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
+
+    public Long getBankCardId() { return bankCardId; }
+    public void setBankCardId(Long bankCardId) { this.bankCardId = bankCardId; }
+
+    public String getCardCvv() { return cardCvv; }
+    public void setCardCvv(String cardCvv) { this.cardCvv = cardCvv; }
 
     public List<OrderItemRequest> getItems() { return items; }
     public void setItems(List<OrderItemRequest> items) { this.items = items; }

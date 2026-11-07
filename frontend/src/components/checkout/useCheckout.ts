@@ -1,13 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 
 import { useShop } from "@/context/ShopContext";
-import { createOrder, validatePromotionCode } from "@/services/api";
-import { PaymentMethod, OrderResponse } from "@/types";
+import {
+  createOrder,
+  fetchMyBankCards,
+  fetchMyVouchers,
+  validatePromotionCode,
+} from "@/services/api";
+import {
+  BankCardItem,
+  PaymentMethod,
+  OrderResponse,
+  VoucherItem,
+} from "@/types";
 
 export interface AppliedCoupon {
   code: string;
   discountPercent: number;
   discountAmount: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
 }
 
 export const formatVNDPrice = (val: number): string => {
@@ -23,6 +35,7 @@ export const useCheckout = () => {
     clearCart,
     isCheckoutOpen,
     setIsCheckoutOpen,
+    setIsVoucherWalletOpen,
     showToast,
     totalCartPrice,
     totalCartItems,
@@ -37,21 +50,75 @@ export const useCheckout = () => {
   const [notes, setNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
 
-  // Auto-fill from logged in user
+  // Saved vouchers & bank cards from user wallet
+  const [savedVouchers, setSavedVouchers] = useState<VoucherItem[]>([]);
+  const [bankCards, setBankCards] = useState<BankCardItem[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [cardCvv, setCardCvv] = useState("");
+
+  const loadCards = useCallback(() => {
+    if (!currentUser) {
+      setBankCards([]);
+      setSelectedCardId(null);
+      return;
+    }
+    fetchMyBankCards()
+      .then((cards) => {
+        setBankCards(cards);
+        if (cards.length > 0) {
+          const def = cards.find((c) => c.isDefault) || cards[0];
+          setSelectedCardId((prev) =>
+            prev && cards.some((c) => c.id === prev) ? prev : def.id,
+          );
+        } else {
+          setSelectedCardId(null);
+        }
+      })
+      .catch(() => {
+        setBankCards([]);
+      });
+  }, [currentUser]);
+
+  // Auto-fill from logged in user & load saved vouchers + bank cards
   useEffect(() => {
     if (currentUser && isCheckoutOpen) {
       if (currentUser.fullName) setCustomerName(currentUser.fullName);
       if (currentUser.phone) setCustomerPhone(currentUser.phone);
       if (currentUser.email) setCustomerEmail(currentUser.email);
       if (currentUser.address) setShippingAddress(currentUser.address);
+
+      fetchMyVouchers()
+        .then((list) => {
+          setSavedVouchers(
+            list.filter((v) => v.userVoucherStatus === "AVAILABLE"),
+          );
+        })
+        .catch(() => {
+          setSavedVouchers([]);
+        });
+
+      loadCards();
+    } else if (!currentUser) {
+      setSavedVouchers([]);
+      setBankCards([]);
+      setSelectedCardId(null);
     }
-  }, [currentUser, isCheckoutOpen]);
+  }, [currentUser, isCheckoutOpen, loadCards]);
+
+  useEffect(() => {
+    const onCardsUpdated = () => loadCards();
+    window.addEventListener("homenest:cards-updated", onCardsUpdated);
+    return () =>
+      window.removeEventListener("homenest:cards-updated", onCardsUpdated);
+  }, [loadCards]);
 
   // Voucher states
   const [couponInput, setCouponInput] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
-  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(
+    null,
+  );
 
   // Submit states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,50 +129,108 @@ export const useCheckout = () => {
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
   const [copiedBankInfo, setCopiedBankInfo] = useState(false);
 
-  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  // Tier 1: Voucher discount
+  const voucherDiscountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    let calc = Math.round(
+      (totalCartPrice * appliedCoupon.discountPercent) / 100,
+    );
+    if (
+      appliedCoupon.maxDiscountAmount &&
+      calc > appliedCoupon.maxDiscountAmount
+    ) {
+      calc = appliedCoupon.maxDiscountAmount;
+    }
+    return calc;
+  }, [appliedCoupon, totalCartPrice]);
+
+  // Tier 2: Stacked VIP direct discount (applied on amount after voucher discount)
+  const vipDiscountPercent = currentUser?.vipActive
+    ? currentUser.vipDiscountPercent || 0
+    : 0;
+  const vipMaxDiscountAmount = currentUser?.vipActive
+    ? currentUser.vipMaxDiscountAmount || 0
+    : 0;
+  const vipTierApplied = currentUser?.vipActive
+    ? currentUser.vipTier || "NONE"
+    : "NONE";
+
+  const vipDiscountAmount = useMemo(() => {
+    if (!currentUser?.vipActive || vipDiscountPercent <= 0) return 0;
+    const afterVoucher = Math.max(0, totalCartPrice - voucherDiscountAmount);
+    let calc = Math.round((afterVoucher * vipDiscountPercent) / 100);
+    if (vipMaxDiscountAmount > 0 && calc > vipMaxDiscountAmount) {
+      calc = vipMaxDiscountAmount;
+    }
+    return calc;
+  }, [
+    currentUser?.vipActive,
+    vipDiscountPercent,
+    vipMaxDiscountAmount,
+    totalCartPrice,
+    voucherDiscountAmount,
+  ]);
+
+  const discountAmount = voucherDiscountAmount + vipDiscountAmount;
   const finalTotal = Math.max(0, totalCartPrice - discountAmount);
 
-  const handleApplyCoupon = useCallback(async () => {
-    if (!couponInput.trim()) {
-      setCouponError("Vui lòng nhập mã giảm giá");
-
-      return;
-    }
-    setIsApplyingCoupon(true);
-    setCouponError(null);
-    try {
-      const code = couponInput.trim().toUpperCase();
-      const res = await validatePromotionCode(code);
-
-      if (res.valid) {
-        let calcDiscount = Math.round(
-          (totalCartPrice * res.discountPercent) / 100,
-        );
-
-        if (res.maxDiscountAmount && calcDiscount > res.maxDiscountAmount) {
-          calcDiscount = res.maxDiscountAmount;
-        }
-        setAppliedCoupon({
-          code: res.code,
-          discountPercent: res.discountPercent,
-          discountAmount: calcDiscount,
-        });
-        showToast(
-          "Áp dụng mã giảm giá thành công!",
-          `Giảm ${res.discountPercent}% cho đơn hàng`,
-          "success",
-        );
-      } else {
-        setCouponError(
-          res.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn.",
-        );
+  const applyCodeInternal = useCallback(
+    async (rawCode: string) => {
+      if (!rawCode.trim()) {
+        setCouponError("Vui lòng nhập hoặc chọn mã giảm giá");
+        return;
       }
-    } catch {
-      setCouponError("Không thể kiểm tra mã giảm giá vào lúc này.");
-    } finally {
-      setIsApplyingCoupon(false);
-    }
-  }, [couponInput, totalCartPrice, showToast]);
+      setIsApplyingCoupon(true);
+      setCouponError(null);
+      try {
+        const code = rawCode.trim().toUpperCase();
+        const res = await validatePromotionCode(code, totalCartPrice);
+
+        if (res.valid) {
+          let calcDiscount = Math.round(
+            (totalCartPrice * res.discountPercent) / 100,
+          );
+
+          if (res.maxDiscountAmount && calcDiscount > res.maxDiscountAmount) {
+            calcDiscount = res.maxDiscountAmount;
+          }
+          setCouponInput(res.code);
+          setAppliedCoupon({
+            code: res.code,
+            discountPercent: res.discountPercent,
+            discountAmount: calcDiscount,
+            maxDiscountAmount: res.maxDiscountAmount,
+            minOrderAmount: res.minOrderAmount,
+          });
+          showToast(
+            "Áp dụng mã giảm giá thành công!",
+            `Giảm ${res.discountPercent}% (${formatVNDPrice(calcDiscount)}) cho đơn hàng`,
+            "success",
+          );
+        } else {
+          setCouponError(
+            res.message || "Mã giảm giá không hợp lệ hoặc chưa đủ điều kiện.",
+          );
+        }
+      } catch {
+        setCouponError("Không thể kiểm tra mã giảm giá vào lúc này.");
+      } finally {
+        setIsApplyingCoupon(false);
+      }
+    },
+    [totalCartPrice, showToast],
+  );
+
+  const handleApplyCoupon = useCallback(async () => {
+    await applyCodeInternal(couponInput);
+  }, [applyCodeInternal, couponInput]);
+
+  const handleSelectSavedVoucher = useCallback(
+    async (voucher: VoucherItem) => {
+      await applyCodeInternal(voucher.code);
+    },
+    [applyCodeInternal],
+  );
 
   const handleRemoveCoupon = useCallback(() => {
     setAppliedCoupon(null);
@@ -121,7 +246,6 @@ export const useCheckout = () => {
       // Validation
       if (!customerName.trim()) {
         setSubmitError("Vui lòng nhập họ và tên của bạn.");
-
         return;
       }
       const phoneRegex = /^(0|\+84)[0-9]{9,10}$/;
@@ -130,18 +254,35 @@ export const useCheckout = () => {
         setSubmitError(
           "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam (ví dụ: 0912345678).",
         );
-
         return;
       }
       if (!shippingAddress.trim()) {
         setSubmitError("Vui lòng nhập địa chỉ nhận hàng chi tiết.");
-
         return;
       }
       if (cart.length === 0) {
         setSubmitError("Giỏ hàng đang trống, không thể tiến hành đặt hàng.");
-
         return;
+      }
+      if (paymentMethod === "BANK_CARD") {
+        if (!currentUser) {
+          setSubmitError(
+            "Vui lòng đăng nhập để thanh toán bằng thẻ ngân hàng đã liên kết.",
+          );
+          return;
+        }
+        if (!selectedCardId) {
+          setSubmitError(
+            "Vui lòng chọn thẻ ngân hàng liên kết để thanh toán đơn hàng.",
+          );
+          return;
+        }
+        if (!cardCvv.trim()) {
+          setSubmitError(
+            "Vui lòng nhập mã bảo mật CVV của thẻ để xác nhận thanh toán.",
+          );
+          return;
+        }
       }
 
       setIsSubmitting(true);
@@ -153,6 +294,12 @@ export const useCheckout = () => {
           shippingAddress: shippingAddress.trim(),
           notes: notes.trim() || undefined,
           paymentMethod,
+          bankCardId:
+            paymentMethod === "BANK_CARD" && selectedCardId
+              ? selectedCardId
+              : undefined,
+          cardCvv:
+            paymentMethod === "BANK_CARD" ? cardCvv.trim() : undefined,
           couponCode: appliedCoupon?.code,
           items: cart.map((item) => ({
             productId: item.product.id,
@@ -163,7 +310,10 @@ export const useCheckout = () => {
         const res = await createOrder(orderData);
 
         setOrderSuccess(res);
+        setCardCvv("");
         clearCart();
+        window.dispatchEvent(new Event("homenest:vouchers-updated"));
+        window.dispatchEvent(new Event("homenest:cards-updated"));
         showToast(
           "Đặt hàng thành công!",
           `Mã đơn hàng của bạn là: ${res.orderNumber}`,
@@ -188,6 +338,9 @@ export const useCheckout = () => {
       shippingAddress,
       notes,
       paymentMethod,
+      selectedCardId,
+      cardCvv,
+      currentUser,
       appliedCoupon,
       cart,
       clearCart,
@@ -245,13 +398,25 @@ export const useCheckout = () => {
     setNotes,
     paymentMethod,
     setPaymentMethod,
+    bankCards,
+    selectedCardId,
+    setSelectedCardId,
+    cardCvv,
+    setCardCvv,
+    openWalletCards: () => setIsVoucherWalletOpen(true),
     couponInput,
     setCouponInput,
     isApplyingCoupon,
     couponError,
     appliedCoupon,
+    savedVouchers,
     handleApplyCoupon,
+    handleSelectSavedVoucher,
     handleRemoveCoupon,
+    voucherDiscountAmount,
+    vipDiscountAmount,
+    vipDiscountPercent,
+    vipTierApplied,
     discountAmount,
     finalTotal,
     totalCartPrice,
@@ -267,4 +432,3 @@ export const useCheckout = () => {
     handleCopyBankInfo,
   };
 };
-

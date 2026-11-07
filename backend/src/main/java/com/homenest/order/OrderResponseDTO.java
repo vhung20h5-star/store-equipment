@@ -19,9 +19,14 @@ public class OrderResponseDTO {
     private OrderStatus orderStatus;
     private Long subtotalAmount;
     private Long discountAmount;
+    private Long voucherDiscountAmount;
+    private Long vipDiscountAmount;
+    private String vipTierApplied;
     private Long shippingFee;
     private Long totalAmount;
     private String couponCode;
+    private Long bankCardId;
+    private String cardMasked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime cancelledAt;
@@ -70,6 +75,15 @@ public class OrderResponseDTO {
     public Long getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(Long discountAmount) { this.discountAmount = discountAmount; }
 
+    public Long getVoucherDiscountAmount() { return voucherDiscountAmount; }
+    public void setVoucherDiscountAmount(Long voucherDiscountAmount) { this.voucherDiscountAmount = voucherDiscountAmount; }
+
+    public Long getVipDiscountAmount() { return vipDiscountAmount; }
+    public void setVipDiscountAmount(Long vipDiscountAmount) { this.vipDiscountAmount = vipDiscountAmount; }
+
+    public String getVipTierApplied() { return vipTierApplied; }
+    public void setVipTierApplied(String vipTierApplied) { this.vipTierApplied = vipTierApplied; }
+
     public Long getShippingFee() { return shippingFee; }
     public void setShippingFee(Long shippingFee) { this.shippingFee = shippingFee; }
 
@@ -78,6 +92,12 @@ public class OrderResponseDTO {
 
     public String getCouponCode() { return couponCode; }
     public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
+
+    public Long getBankCardId() { return bankCardId; }
+    public void setBankCardId(Long bankCardId) { this.bankCardId = bankCardId; }
+
+    public String getCardMasked() { return cardMasked; }
+    public void setCardMasked(String cardMasked) { this.cardMasked = cardMasked; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

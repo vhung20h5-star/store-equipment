@@ -9,7 +9,7 @@ export const CATEGORIES: Category[] = [
       "Nồi chiên không dầu, nồi cơm cao tần, máy pha cà phê chuẩn barista",
     image:
       "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
-    itemCount: 24,
+    itemCount: 9,
   },
   {
     id: "cat-2",
@@ -19,7 +19,7 @@ export const CATEGORIES: Category[] = [
       "Robot hút bụi tự động, máy lau sàn đa năng, máy hút bụi cầm tay",
     image:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
-    itemCount: 18,
+    itemCount: 7,
   },
   {
     id: "cat-3",
@@ -29,7 +29,7 @@ export const CATEGORIES: Category[] = [
       "Máy lọc không khí True HEPA, máy tạo ẩm bù ẩm thông minh, quạt tháp",
     image:
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-    itemCount: 15,
+    itemCount: 7,
   },
   {
     id: "cat-4",
@@ -39,7 +39,7 @@ export const CATEGORIES: Category[] = [
       "Thiết bị kết nối App điều khiển từ xa, cảm biến tự động hóa gia đình",
     image:
       "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
-    itemCount: 20,
+    itemCount: 7,
   },
 ];
 
@@ -58,6 +58,11 @@ export const PRODUCTS: Product[] = [
     badgeType: "bestseller",
     image:
       "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Công nghệ đối lưu Rapid Air 360 độ giúp giảm 90% dầu mỡ thừa, mặt kính cường lực quan sát thức ăn thông minh.",
     features: [
@@ -73,6 +78,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng chính hãng",
     },
     inStock: true,
+    stockQuantity: 45,
+    isActive: true,
   },
   {
     id: "prod-2",
@@ -88,6 +95,11 @@ export const PRODUCTS: Product[] = [
     badgeType: "bestseller",
     image:
       "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Lực hút siêu mạnh 6000Pa kết hợp chổi lau xoay kép tự động giặt giẻ và sấy khô bằng khí nóng trên trạm sạc.",
     features: [
@@ -103,6 +115,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 28,
+    isActive: true,
   },
   {
     id: "prod-3",
@@ -118,6 +132,11 @@ export const PRODUCTS: Product[] = [
     badgeType: "featured",
     image:
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Bộ lọc 5 lớp kết hợp màng lọc True HEPA H13 và công nghệ Plasma ion khử sạch 99.97% bụi mịn PM2.5, phấn hoa và vi khuẩn.",
     features: [
@@ -133,6 +152,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 35,
+    isActive: true,
   },
   {
     id: "prod-4",
@@ -148,6 +169,10 @@ export const PRODUCTS: Product[] = [
     badgeType: "sale",
     image:
       "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Động cơ đồng nguyên chất 1200W với 6 lưỡi dao thép titan Nhật Bản xay nhuyễn đá bi và hạt cứng chỉ trong 10 giây.",
     features: [
@@ -163,6 +188,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "18 tháng",
     },
     inStock: true,
+    stockQuantity: 60,
+    isActive: true,
   },
   {
     id: "prod-5",
@@ -178,6 +205,10 @@ export const PRODUCTS: Product[] = [
     badgeType: "bestseller",
     image:
       "https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Công nghệ đốt nóng cảm ứng từ IH 360 độ giúp hạt cơm chín đều từ trong ra ngoài, giữ trọn vị ngọt tự nhiên của từng hạt gạo.",
     features: [
@@ -193,6 +224,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 50,
+    isActive: true,
   },
   {
     id: "prod-6",
@@ -208,6 +241,10 @@ export const PRODUCTS: Product[] = [
     badgeType: "new",
     image:
       "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Áp suất chuẩn Ý 20 Bar, hệ thống gia nhiệt ThermoBlock siêu nhanh trong 25 giây mang đến ly cà phê béo ngậy lớp crema.",
     features: [
@@ -223,6 +260,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 20,
+    isActive: true,
   },
   {
     id: "prod-7",
@@ -238,6 +277,10 @@ export const PRODUCTS: Product[] = [
     badgeType: "featured",
     image:
       "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Trọng lượng chỉ 1.2kg siêu nhẹ, lực hút xoáy 25,000Pa cùng cụm đèn LED soi bụi ẩn gầm giường ghế thông minh.",
     features: [
@@ -253,6 +296,8 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 30,
+    isActive: true,
   },
   {
     id: "prod-8",
@@ -268,6 +313,10 @@ export const PRODUCTS: Product[] = [
     badgeType: "sale",
     image:
       "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    ],
     description:
       "Thiết kế không cánh an toàn tuyệt đối cho trẻ nhỏ, kết hợp lõi lọc không khí ion âm và góc quay rộng 90 độ.",
     features: [
@@ -283,6 +332,824 @@ export const PRODUCTS: Product[] = [
       "Bảo hành": "24 tháng",
     },
     inStock: true,
+    stockQuantity: 40,
+    isActive: true,
+  },
+  {
+    id: "prod-9",
+    name: "Ổ cắm thông minh HomeNest SmartPlug WiFi 16A",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 250000,
+    originalPrice: 350000,
+    discountPercent: 29,
+    rating: 4.9,
+    reviewsCount: 98,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Đo điện năng tiêu thụ thời gian thực, bật tắt từ xa qua ứng dụng di động tiếng Việt và hẹn giờ tự động thông minh.",
+    features: [
+      "Đo điện năng tiêu thụ thiết bị theo ngày/tháng",
+      "Lập lịch bật tắt tự động theo giờ sinh hoạt gia đình",
+      "Tương thích Google Assistant và Alexa",
+    ],
+    specs: {
+      "Dòng tải tối đa": "16A - 3500W",
+      "Kết nối": "WiFi 2.4GHz",
+      "Chống cháy": "Nhựa PC chống cháy 750 độ C",
+      "Bảo hành": "12 tháng",
+    },
+    inStock: true,
+    stockQuantity: 100,
+    isActive: true,
+  },
+  {
+    id: "prod-10",
+    name: "Cảm biến nhiệt độ độ ẩm không khí HomeNest AirSensor",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 390000,
+    originalPrice: 520000,
+    discountPercent: 25,
+    rating: 4.8,
+    reviewsCount: 86,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Màn hình mực điện tử E-ink siêu nét, kết nối Bluetooth Mesh tự động kích hoạt máy lọc không khí và điều hòa.",
+    features: [
+      "Màn hình hiển thị nhiệt độ và độ ẩm trực quan",
+      "Thời lượng pin sử dụng lên đến 1 năm",
+      "Lưu biểu đồ biến thiên chất lượng không khí trong 6 tháng",
+    ],
+    specs: {
+      "Màn hình": "E-ink 3.7 inch",
+      "Độ chính xác nhiệt độ": "±0.1 độ C",
+      "Độ chính xác độ ẩm": "±1% RH",
+      "Bảo hành": "12 tháng",
+    },
+    inStock: true,
+    stockQuantity: 75,
+    isActive: true,
+  },
+  // ==================== 20 SẢN PHẨM MỚI ĐA DẠNG (prod-11 -> prod-30) ====================
+  {
+    id: "prod-11",
+    name: "Bếp từ đôi âm mặt kính Schott Ceran HomeNest ChefPro 4000W",
+    category: "kitchen",
+    categoryName: "Thiết bị nhà bếp",
+    price: 5490000,
+    originalPrice: 7200000,
+    discountPercent: 24,
+    rating: 4.9,
+    reviewsCount: 284,
+    badge: "Bán chạy",
+    badgeType: "bestseller",
+    image:
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Mặt kính Schott Ceran nhập khẩu Đức chịu sốc nhiệt 800°C, tích hợp công nghệ biến tần Inverter tiết kiệm 35% điện năng và chức năng Booster đun sôi siêu tốc.",
+    features: [
+      "Mặt kính Schott Ceran vát 4 cạnh chống trầy xước và chịu lực cao",
+      "Công nghệ Inverter duy trì nhiệt liu riu không bật tắt liên tục",
+      "Chức năng khóa trẻ em, tự ngắt khi tràn nước và cảnh báo nhiệt dư",
+      "Bảng điều khiển trượt Slide độc lập cho từng vùng nấu",
+    ],
+    specs: {
+      "Tổng công suất": "4000W (Booster 2200W/vùng)",
+      "Mặt kính": "Schott Ceran (Đức)",
+      "Công nghệ tiết kiệm điện": "Half-Bridge Inverter",
+      "Kích thước cắt đá": "680 x 380 mm",
+      "Bảo hành": "36 tháng tại nhà",
+    },
+    inStock: true,
+    stockQuantity: 22,
+    isActive: true,
+  },
+  {
+    id: "prod-12",
+    name: "Máy làm sữa hạt đa năng cách âm HomeNest NutriSilent 1.5L",
+    category: "kitchen",
+    categoryName: "Thiết bị nhà bếp",
+    price: 1690000,
+    originalPrice: 2350000,
+    discountPercent: 28,
+    rating: 4.8,
+    reviewsCount: 319,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Lồng chụp tiêu âm 5 lớp giảm tiếng ồn xuống dưới 52dB, lưỡi dao 8 cánh inox 304 xay mịn sữa hạt nguyên xác không cần lọc bã.",
+    features: [
+      "Lồng chụp cách âm tháo rời giảm 60% tiếng ồn khi xay sáng sớm",
+      "10 chương trình nấu tự động: sữa hạt, cháo mịn, súp, sinh tố, hầm canh",
+      "Chế độ tự vệ sinh khử khuẩn bằng nước nóng 100°C",
+      "Hẹn giờ nấu thông minh 12 tiếng, sáng thức dậy có ngay sữa nóng",
+    ],
+    specs: {
+      "Dung tích cối": "1.5 Lít (4 - 6 người)",
+      "Công suất xay / nấu": "1000W / 800W",
+      "Độ ồn vận hành": "< 52 dB (Có lồng cách âm)",
+      "Mâm nhiệt": "Gốm Ceramic chống khê",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 40,
+    isActive: true,
+  },
+  {
+    id: "prod-13",
+    name: "Lò nướng kiêm nồi chiên hơi nước HomeNest SteamBake 25L",
+    category: "kitchen",
+    categoryName: "Thiết bị nhà bếp",
+    price: 3490000,
+    originalPrice: 4500000,
+    discountPercent: 22,
+    rating: 4.9,
+    reviewsCount: 156,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Sự kết hợp hoàn hảo giữa luồng khí nóng đối lưu và phun sương siêu nhiệt giúp món nướng giòn rụm bên ngoài, mềm mọng bên trong.",
+    features: [
+      "Bình chứa nước 1.2L tạo hơi nước siêu nhiệt giữ trọn độ ẩm thực phẩm",
+      "3 chế độ chuyên sâu: Chiên không dầu, Nướng hơi nước, Hấp nguyên bản",
+      "Cửa kính 3 lớp cách nhiệt an toàn kèm đèn chiếu sáng khoang lò",
+      "Đi kèm khay nướng, vỉ chiên, khay hấp inox 304 chống gỉ",
+    ],
+    specs: {
+      "Dung tích khoang lò": "25 Lít",
+      "Công suất": "2000W",
+      "Dải nhiệt độ": "40°C - 230°C",
+      "Chất liệu khoang lò": "Inox 304 chuẩn thực phẩm",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 15,
+    isActive: true,
+  },
+  {
+    id: "prod-14",
+    name: "Ấm đun siêu tốc kiểm soát nhiệt độ HomeNest BrewTemp 1.7L",
+    category: "kitchen",
+    categoryName: "Thiết bị nhà bếp",
+    price: 690000,
+    originalPrice: 950000,
+    discountPercent: 27,
+    rating: 4.8,
+    reviewsCount: 428,
+    badge: "Giảm sốc",
+    badgeType: "sale",
+    image:
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Bộ điều chỉnh nhiệt Strix Anh Quốc bền bỉ 10.000 lần đun, tùy chỉnh 5 mức nhiệt chuẩn xác để pha trà, pha sữa cho bé và cà phê.",
+    features: [
+      "Màn hình LED hiển thị nhiệt độ nước thời gian thực ngay trên tay cầm",
+      "Chức năng giữ ấm thông minh suốt 12 giờ cho mẹ bỉm pha sữa đêm",
+      "Vỏ ấm 2 lớp cách nhiệt chống bỏng tuyệt đối khi chạm vào",
+      "Lõi inox 316 chuẩn y tế không bám cặn và không mùi kim loại",
+    ],
+    specs: {
+      "Dung tích": "1.7 Lít",
+      "Công suất": "1850W",
+      "Mức chỉnh nhiệt": "40°C / 60°C / 80°C / 90°C / 100°C",
+      "Ruột ấm": "Inox 316 y tế đúc liền khối",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: true,
+    stockQuantity: 85,
+    isActive: true,
+  },
+  {
+    id: "prod-15",
+    name: "Máy rửa bát độc lập sấy khí nóng HomeNest DishPure 12 Bộ",
+    category: "kitchen",
+    categoryName: "Thiết bị nhà bếp",
+    price: 8990000,
+    originalPrice: 11500000,
+    discountPercent: 22,
+    rating: 4.9,
+    reviewsCount: 112,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Rửa nước nóng 75°C đánh bay dầu mỡ cứng đầu, sấy khô Turbo khí nóng kết hợp tia UV diệt khuẩn 99.99% và bảo quản bát đĩa 72 giờ.",
+    features: [
+      "3 giàn rửa linh hoạt điều chỉnh độ cao, xếp gọn cả xoong nồi lớn",
+      "6 chương trình rửa chuyên biệt: Rửa chuyên sâu, Eco, Thủy tinh, Rửa nhanh 29 phút",
+      "Chế độ bảo quản FreshAir lưu thông khí tươi chống ẩm mốc 72 giờ",
+      "Cảm biến độ đục nước thông minh tự động tối ưu lượng nước và điện",
+    ],
+    specs: {
+      "Sức chứa": "12 bộ đồ ăn châu Âu (3 giàn rửa)",
+      "Lượng nước tiêu thụ": "9.5 Lít / chu trình",
+      "Độ ồn": "44 dB êm ái",
+      "Công nghệ sấy": "Sấy khí nóng PTC + Tia UV-C",
+      "Bảo hành": "36 tháng tận nơi",
+    },
+    inStock: true,
+    stockQuantity: 4,
+    isActive: true,
+  },
+  {
+    id: "prod-16",
+    name: "Máy hút bụi lau sàn khô ướt tự giặt con lăn HomeNest AquaWash H14",
+    category: "cleaning",
+    categoryName: "Thiết bị vệ sinh",
+    price: 4590000,
+    originalPrice: 6200000,
+    discountPercent: 26,
+    rating: 4.9,
+    reviewsCount: 267,
+    badge: "Bán chạy",
+    badgeType: "bestseller",
+    image:
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Vừa hút vừa lau xử lý gọn cả vết bẩn khô lẫn chất lỏng đổ ra sàn, con lăn tràn viền 2 cạnh cùng chế độ tự giặt bằng nước nóng 60°C.",
+    features: [
+      "Con lăn tràn viền 2 bên làm sạch sát chân tường chỉ 1mm",
+      "Tự động giặt con lăn bằng nước nóng 60°C và sấy khô khí nóng trong 30 phút",
+      "Khử trùng nước điện phân thời gian thực tiêu diệt 99.9% vi khuẩn sàn nhà",
+      "Trợ lực kéo đẩy hai chiều nhẹ nhàng bằng một tay",
+    ],
+    specs: {
+      "Lực hút": "18,000Pa",
+      "Thời gian hoạt động": "45 phút liên tục",
+      "Bình nước sạch / bẩn": "880ml / 650ml",
+      "Góc ngả phẳng": "180 độ luồn gầm giường",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 32,
+    isActive: true,
+  },
+  {
+    id: "prod-17",
+    name: "Máy hút mạt bụi giường nệm tia UV-C HomeNest MiteGuard Pro",
+    category: "cleaning",
+    categoryName: "Thiết bị vệ sinh",
+    price: 1250000,
+    originalPrice: 1750000,
+    discountPercent: 29,
+    rating: 4.8,
+    reviewsCount: 390,
+    badge: "Giảm sốc",
+    badgeType: "sale",
+    image:
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Tần số rung đập 12.000 lần/phút kết hợp đèn UV-C bước sóng 253.7nm và luồng khí nóng 55°C tiêu diệt tận gốc mạt bụi và tác nhân dị ứng.",
+    features: [
+      "Đèn UV-C tự động tắt khi nhấc máy khỏi bề mặt nệm để bảo vệ mắt",
+      "Cảm biến phát hiện mật độ mạt bụi thông minh báo đèn LED 3 màu",
+      "Luồng khí nóng 55°C hút ẩm chăn ga trong những ngày mưa phùn",
+      "Bộ lọc HEPA giặt rửa tái sử dụng nhiều lần",
+    ],
+    specs: {
+      "Lực hút": "14,000Pa",
+      "Công suất": "500W",
+      "Nhiệt độ sấy": "55°C khử ẩm nệm",
+      "Hộp chứa bụi": "Cốc lọc kép xoáy lốc 0.5L",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: true,
+    stockQuantity: 55,
+    isActive: true,
+  },
+  {
+    id: "prod-18",
+    name: "Cây lau nhà hơi nước nóng tiệt trùng HomeNest SteamMop S3",
+    category: "cleaning",
+    categoryName: "Thiết bị vệ sinh",
+    price: 1590000,
+    originalPrice: 2100000,
+    discountPercent: 24,
+    rating: 4.7,
+    reviewsCount: 174,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Tạo hơi nước nóng 120°C chỉ sau 15 giây khởi động, làm sạch sâu vết dầu mỡ sàn gỗ và gạch men mà không cần dùng hóa chất tẩy rửa.",
+    features: [
+      "Làm nóng cực nhanh 15 giây, phun hơi nước áp lực mạnh đánh bay vết bẩn khô",
+      "3 mức điều chỉnh lượng hơi nước phù hợp sàn gỗ, gạch men và đá hoa cương",
+      "Khớp xoay 180 độ dễ dàng luồn lách dưới gầm bàn ghế",
+      "Tặng kèm 3 miếng khăn lau sợi Microfiber siêu thấm hút",
+    ],
+    specs: {
+      "Công suất": "1300W",
+      "Nhiệt độ hơi nước": "120°C tiệt trùng",
+      "Dung tích bình nước": "450 ml",
+      "Chiều dài dây nguồn": "5 mét linh hoạt",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: true,
+    stockQuantity: 38,
+    isActive: true,
+  },
+  {
+    id: "prod-19",
+    name: "Robot lau kính thông minh chống rơi HomeNest WinBot W2",
+    category: "cleaning",
+    categoryName: "Thiết bị vệ sinh",
+    price: 3290000,
+    originalPrice: 4300000,
+    discountPercent: 23,
+    rating: 4.8,
+    reviewsCount: 95,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Lực bám hút chân không 3800Pa an toàn tuyệt đối cho cửa kính chung cư cao tầng, hệ thống phun sương siêu âm kép lau sạch bóng không vệt nước.",
+    features: [
+      "Thuật toán lập bản đồ đường đi thông minh không bỏ sót góc kính",
+      "Cảm biến phát hiện cạnh khung cửa thích hợp cho cả kính không viền",
+      "Vòi phun sương siêu âm kép làm mềm bụi bẩn khô cứng",
+      "Pin lưu điện khẩn cấp giữ máy bám chặt trên kính 30 phút kèm còi báo",
+    ],
+    specs: {
+      "Lực hút bám kính": "3800Pa",
+      "Pin dự phòng UPS": "Giữ bám 30 phút khi mất điện",
+      "Chế độ di chuyển": "Z / N / Tự động thông minh",
+      "Dây đai an toàn": "Chịu tải 150 kg",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 18,
+    isActive: true,
+  },
+  {
+    id: "prod-20",
+    name: "Máy giặt thảm & sofa cầm tay phun hút sâu HomeNest SpotClean C5",
+    category: "cleaning",
+    categoryName: "Thiết bị vệ sinh",
+    price: 2190000,
+    originalPrice: 2890000,
+    discountPercent: 24,
+    rating: 4.8,
+    reviewsCount: 210,
+    badge: "Giảm sốc",
+    badgeType: "sale",
+    image:
+      "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Công nghệ phun nước áp lực cao thẩm thấu sâu vào sợi vải và hút sạch vết cà phê, nước sốt, vết bẩn thú cưng trên ghế sofa, nệm và thảm.",
+    features: [
+      "Phun nước sạch và hút ngược nước bẩn đồng thời không làm ướt lõi nệm",
+      "Đánh bay vết cà phê, trà, rượu vang, nước tiểu thú cưng trong 30 giây",
+      "Thiết kế nhỏ gọn xách tay, cất gọn trong tủ đồ gia đình",
+      "Bình nước sạch và nước bẩn tách biệt hoàn toàn, tháo lắp dễ dàng",
+    ],
+    specs: {
+      "Lực hút": "13,000Pa",
+      "Công suất": "650W",
+      "Bình nước sạch / bẩn": "1.4L / 1.2L",
+      "Đầu hút đi kèm": "Đầu bàn chải tiêu chuẩn + Đầu hút khe",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: false,
+    stockQuantity: 0,
+    isActive: true,
+  },
+  {
+    id: "prod-21",
+    name: "Máy hút ẩm kiêm lọc không khí HEPA HomeNest DryAir 20L",
+    category: "air",
+    categoryName: "Chăm sóc không khí",
+    price: 4190000,
+    originalPrice: 5500000,
+    discountPercent: 24,
+    rating: 4.9,
+    reviewsCount: 334,
+    badge: "Bán chạy",
+    badgeType: "bestseller",
+    image:
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Giải pháp hoàn hảo cho mùa nồm ẩm: công suất hút ẩm 20 lít/ngày kết hợp màng lọc HEPA và chế độ sấy quần áo khô nhanh không mùi hôi.",
+    features: [
+      "Hút ẩm mạnh mẽ 20L/ngày giữ nhà cửa khô ráo suốt mùa nồm miền Bắc",
+      "Tích hợp màng lọc HEPA H13 lọc sạch bụi mịn và bào tử nấm mốc",
+      "Chế độ sấy quần áo chuyên dụng giúp đồ khô nhanh, thơm tho",
+      "Bánh xe xoay 360 độ di chuyển nhẹ nhàng giữa các phòng",
+    ],
+    specs: {
+      "Công suất hút ẩm": "20 Lít / ngày (30°C, 80% RH)",
+      "Diện tích phòng": "30 - 50 m²",
+      "Dung tích bình chứa": "4.5 Lít (Có ống xả liên tục)",
+      "Độ ồn": "38 dB",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 25,
+    isActive: true,
+  },
+  {
+    id: "prod-22",
+    name: "Máy tạo độ ẩm siêu âm kháng khuẩn UV HomeNest MistPure 5L",
+    category: "air",
+    categoryName: "Chăm sóc không khí",
+    price: 990000,
+    originalPrice: 1390000,
+    discountPercent: 29,
+    rating: 4.8,
+    reviewsCount: 245,
+    badge: "Giảm sốc",
+    badgeType: "sale",
+    image:
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Phun sương hạt nano siêu mịn bù ẩm tức thì cho phòng bật điều hòa, tích hợp đèn UV-C khử khuẩn nguồn nước và khay khuếch tán tinh dầu thư giãn.",
+    features: [
+      "Thiết kế châm nước từ phía trên tiện lợi không cần tháo bình",
+      "Đèn UV-C diệt khuẩn nước trước khi phun sương bảo vệ hệ hô hấp",
+      "Cảm biến độ ẩm thông minh tự ngắt khi đạt độ ẩm lý tưởng",
+      "Khay tinh dầu riêng biệt mang lại hương thơm dịu nhẹ cho phòng ngủ",
+    ],
+    specs: {
+      "Dung tích bình nước": "5.0 Lít (Dùng 36 giờ)",
+      "Lưu lượng phun sương": "350 ml/h",
+      "Cảm biến độ ẩm": "Tự động duy trì 45% - 75% RH",
+      "Độ ồn": "25 dB siêu tĩnh",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: true,
+    stockQuantity: 64,
+    isActive: true,
+  },
+  {
+    id: "prod-23",
+    name: "Quạt tuần hoàn không khí đối lưu 3D HomeNest AeroFlow DC",
+    category: "air",
+    categoryName: "Chăm sóc không khí",
+    price: 1450000,
+    originalPrice: 1950000,
+    discountPercent: 26,
+    rating: 4.8,
+    reviewsCount: 189,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Động cơ DC Inverter không chổi than tạo luồng gió xoắn ốc thổi xa 15 mét, giúp cân bằng nhiệt độ phòng điều hòa nhanh gấp 3 lần.",
+    features: [
+      "Đảo gió 3D tự động 2 chiều giúp không khí lưu thông khắp phòng",
+      "Chiều cao thay đổi linh hoạt từ quạt để bàn sang quạt cây đứng",
+      "Động cơ DC siêu êm chỉ 20dB ở mức gió thấp nhất",
+      "Điều khiển từ xa nam châm hít gọn ngay trên lồng quạt",
+    ],
+    specs: {
+      "Động cơ": "DC Inverter không chổi than",
+      "Góc đảo gió 3D": "Ngang 90° + Dọc 100° tự động",
+      "Số cấp độ gió": "12 cấp độ + Gió ngủ",
+      "Công suất": "24W siêu tiết kiệm",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 48,
+    isActive: true,
+  },
+  {
+    id: "prod-24",
+    name: "Máy lọc không khí khử mùi thú cưng HomeNest PetCare H13",
+    category: "air",
+    categoryName: "Chăm sóc không khí",
+    price: 3690000,
+    originalPrice: 4800000,
+    discountPercent: 23,
+    rating: 4.9,
+    reviewsCount: 142,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Thiết kế cửa hút gió 360 độ sát sàn chuyên thu gom lông mèo, lông chó bay lơ lửng cùng lõi than hoạt tính gấp đôi khử sạch mùi hôi thú cưng.",
+    features: [
+      "Lưới lọc sơ cấp chuyên dụng giữ lại 99% lông thú cưng, tháo giặt dễ dàng",
+      "Công nghệ khử mùi Amoniac và H2S chuyên biệt cho gia đình nuôi chó mèo",
+      "Dây nguồn bọc chống cắn và khóa bảng điều khiển chống thú cưng dẫm phải",
+      "Chế độ Pet Mode tăng cường luồng hút sát mặt sàn",
+    ],
+    specs: {
+      "Tốc độ lọc CADR": "520 m³/h",
+      "Diện tích sử dụng": "50 - 65 m²",
+      "Màng lọc chuyên dụng":
+        "Lọc sơ cấp giặt được + HEPA H13 + Than hoạt tính kép",
+      "Kết nối": "App HomeNest Smart",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 3,
+    isActive: true,
+  },
+  {
+    id: "prod-25",
+    name: "Máy sưởi gốm Ceramic bù ẩm không khô da HomeNest WarmCozy 2200W",
+    category: "air",
+    categoryName: "Chăm sóc không khí",
+    price: 1850000,
+    originalPrice: 2490000,
+    discountPercent: 26,
+    rating: 4.7,
+    reviewsCount: 128,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Làm ấm phòng chỉ sau 3 giây với thanh nhiệt gốm PTC không đốt cháy oxy, tích hợp hộp tạo ẩm phun sương giúp giữ ấm cổ họng và làn da mùa đông.",
+    features: [
+      "Làm ấm tức thì không đốt oxy, không gây khó thở trong phòng kín",
+      "Tích hợp bình nước tạo ẩm phun sương khắc phục hoàn toàn tình trạng khô da",
+      "Cảm biến ECO tự động điều chỉnh công suất theo nhiệt độ phòng",
+      "Vỏ nhựa ABS chống cháy V0 an toàn tuyệt đối cho gia đình có trẻ nhỏ",
+    ],
+    specs: {
+      "Công suất": "2200W (3 mức nhiệt ECO)",
+      "Công nghệ sưởi": "Gốm PTC không phát sáng",
+      "Tính năng an toàn": "Tự ngắt khi nghiêng đổ & quá nhiệt",
+      "Góc quay": "70 độ",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 29,
+    isActive: true,
+  },
+  {
+    id: "prod-26",
+    name: "Khóa cửa vân tay thông minh 5 trong 1 HomeNest SafeLock FaceID",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 3890000,
+    originalPrice: 5200000,
+    discountPercent: 25,
+    rating: 4.9,
+    reviewsCount: 205,
+    badge: "Bán chạy",
+    badgeType: "bestseller",
+    image:
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Mở khóa siêu nhạy bằng nhận diện khuôn mặt 3D, vân tay bán dẫn FPC Thụy Điển, mã số ảo chống nhìn trộm, thẻ từ NFC và ứng dụng điện thoại.",
+    features: [
+      "Cảm biến nhận diện khuôn mặt 3D hồng ngoại mở cửa trong 0.5 giây cả trong đêm",
+      "Cảm biến vân tay FPC Thụy Điển nhận diện 360 độ chống làm giả",
+      "Gửi thông báo lịch sử mở cửa thời gian thực về điện thoại",
+      "Tạo mật khẩu dùng 1 lần từ xa cho khách hoặc người giúp việc",
+    ],
+    specs: {
+      "Phương thức mở khóa":
+        "FaceID 3D, Vân tay, Mã số, Thẻ từ, Chìa cơ, App",
+      "Chất liệu thân khóa": "Hợp kim kẽm nguyên khối CNC",
+      "Nguồn điện": "Pin sạc Lithium 4200mAh (Cổng sạc khẩn cấp USB-C)",
+      "Cảnh báo an ninh": "Chống cạy cửa, báo cháy, khóa trái trong",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 19,
+    isActive: true,
+  },
+  {
+    id: "prod-27",
+    name: "Camera an ninh AI 360 độ 2K HomeNest CamGuard Pro",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 790000,
+    originalPrice: 1150000,
+    discountPercent: 31,
+    rating: 4.8,
+    reviewsCount: 512,
+    badge: "Giảm sốc",
+    badgeType: "sale",
+    image:
+      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Độ phân giải siêu nét 2K QHD, ống kính xoay 360° tự động bám theo chuyển động người, đàm thoại 2 chiều to rõ và nhìn đêm có màu Starlight.",
+    features: [
+      "Hình ảnh 2K QHD sắc nét gấp đôi Full HD, zoom kỹ thuật số 6x",
+      "AI nhận diện dáng người chuẩn xác, giảm 95% báo động giả do côn trùng",
+      "Chế độ riêng tư vật lý cụp ống kính vào trong vỏ khi gia đình ở nhà",
+      "Đàm thoại 2 chiều khử tiếng vọng rõ ràng từ mọi nơi",
+    ],
+    specs: {
+      "Độ phân giải": "2K QHD (2304 x 1296 px)",
+      "Góc quan sát": "Xoay ngang 360°, dọc 115°",
+      "Tính năng AI": "Phát hiện người, tiếng khóc trẻ em, cảnh báo vùng",
+      "Lưu trữ": "Thẻ nhớ MicroSD 256GB / Cloud",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 90,
+    isActive: true,
+  },
+  {
+    id: "prod-28",
+    name: "Bộ trung tâm điều khiển nhà thông minh Zigbee 3.0 HomeNest Hub M2",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 650000,
+    originalPrice: 890000,
+    discountPercent: 27,
+    rating: 4.9,
+    reviewsCount: 134,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Trái tim của ngôi nhà thông minh: kết nối đồng thời 128 cảm biến và công tắc, tích hợp mắt hồng ngoại 360° điều khiển tivi và điều hòa từ xa.",
+    features: [
+      "Kết nối ổn định tới 128 thiết bị Zigbee ngay cả khi mất mạng Internet",
+      "Tích hợp bộ phát hồng ngoại điều khiển điều hòa, TV, quạt truyền thống",
+      "Tạo kịch bản tự động hóa: Mở cửa tự bật đèn, nhiệt độ cao tự bật điều hòa",
+      "Cổng mạng LAN RJ45 đảm bảo độ trễ phản hồi dưới 50ms",
+    ],
+    specs: {
+      "Giao thức kết nối":
+        "Zigbee 3.0 + WiFi + Bluetooth Mesh + Hồng ngoại IR",
+      "Số thiết bị hỗ trợ": "Tối đa 128 thiết bị con",
+      "Cổng nguồn": "USB Type-C (5V - 1A) + Cổng LAN RJ45",
+      "Tương thích": "Apple HomeKit, Google Home, Alexa",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: true,
+    stockQuantity: 52,
+    isActive: true,
+  },
+  {
+    id: "prod-29",
+    name: "Đèn bàn học chống cận thông minh chuẩn Ra98 HomeNest EyeCare Desk",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 890000,
+    originalPrice: 1250000,
+    discountPercent: 29,
+    rating: 4.8,
+    reviewsCount: 223,
+    badge: "Nổi bật",
+    badgeType: "featured",
+    image:
+      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Chỉ số hoàn màu CRI Ra98 mô phỏng ánh sáng mặt trời tự nhiên buổi sáng, cảm biến quang học tự động điều chỉnh độ sáng bảo vệ mắt trẻ nhỏ.",
+    features: [
+      "Ánh sáng toàn phổ Ra98 tái tạo màu sắc trung thực như ánh sáng tự nhiên",
+      "Cảm biến ánh sáng môi trường tự động tăng giảm độ sáng phù hợp mắt",
+      "Cổ đèn gập xoay 3 trục chiếu sáng đều toàn bộ mặt bàn học 1.2m",
+      "Không nhấp nháy (Flicker-free) và lọc ánh sáng xanh có hại chuẩn RG0",
+    ],
+    specs: {
+      "Chỉ số hoàn màu": "CRI Ra98 (Ánh sáng toàn phổ)",
+      "Nhiệt độ màu": "3000K - 5000K vô cấp",
+      "Chế độ thông minh":
+        "Cảm biến tự chỉnh sáng + Nhắc nghỉ mắt sau 45 phút",
+      "Công suất": "14W LED chống chói RG0",
+      "Bảo hành": "24 tháng",
+    },
+    inStock: true,
+    stockQuantity: 44,
+    isActive: true,
+  },
+  {
+    id: "prod-30",
+    name: "Động cơ rèm cửa tự động điều khiển giọng nói HomeNest CurtainBot",
+    category: "smart",
+    categoryName: "Gia dụng thông minh",
+    price: 1490000,
+    originalPrice: 1990000,
+    discountPercent: 25,
+    rating: 4.8,
+    reviewsCount: 118,
+    badge: "Mới ra mắt",
+    badgeType: "new",
+    image:
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+    ],
+    description:
+      "Lắp đặt trong 30 giây lên thanh rèm có sẵn không cần khoan đục, tự động mở rèm đón nắng theo đồng hồ báo thức hoặc cảm biến ánh sáng.",
+    features: [
+      "Lắp đặt trực tiếp lên thanh rèm cũ trong 30 giây không cần thay rèm",
+      "Cảm biến ánh sáng tự động đóng rèm khi nắng gắt buổi trưa",
+      "Tính năng Touch & Go: kéo nhẹ tay 5cm động cơ tự chạy tiếp phần còn lại",
+      "Pin sạc 4000mAh hoạt động bền bỉ tới 8 tháng mới cần sạc lại",
+    ],
+    specs: {
+      "Tải trọng kéo tối đa": "12 kg",
+      "Thời lượng pin": "6 - 8 tháng / lần sạc (Pin 4000mAh)",
+      "Loại thanh rèm hỗ trợ": "Thanh chữ U, chữ I và thanh tròn",
+      "Điều khiển": "App, Giọng nói, Hẹn giờ, Kéo nhẹ tay",
+      "Bảo hành": "18 tháng",
+    },
+    inStock: false,
+    stockQuantity: 0,
+    isActive: true,
   },
 ];
 

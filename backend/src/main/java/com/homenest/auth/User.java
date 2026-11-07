@@ -32,6 +32,12 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Column(name = "vip_tier", nullable = false, length = 30)
+    private String vipTier = "NONE";
+
+    @Column(name = "vip_expires_at")
+    private LocalDateTime vipExpiresAt;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -39,6 +45,39 @@ public class User {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     public User() {}
+
+    public boolean hasActiveVip() {
+        return vipTier != null
+                && !"NONE".equalsIgnoreCase(vipTier)
+                && vipExpiresAt != null
+                && vipExpiresAt.isAfter(LocalDateTime.now());
+    }
+
+    public int getActiveVipDiscountPercent() {
+        if (!hasActiveVip()) {
+            return 0;
+        }
+        if ("VIP_YEARLY".equalsIgnoreCase(vipTier)) {
+            return 8;
+        }
+        if ("VIP_MONTHLY".equalsIgnoreCase(vipTier)) {
+            return 5;
+        }
+        return 0;
+    }
+
+    public long getActiveVipMaxDiscount() {
+        if (!hasActiveVip()) {
+            return 0L;
+        }
+        if ("VIP_YEARLY".equalsIgnoreCase(vipTier)) {
+            return 600000L;
+        }
+        if ("VIP_MONTHLY".equalsIgnoreCase(vipTier)) {
+            return 300000L;
+        }
+        return 0L;
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -63,6 +102,12 @@ public class User {
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public String getVipTier() { return vipTier; }
+    public void setVipTier(String vipTier) { this.vipTier = vipTier; }
+
+    public LocalDateTime getVipExpiresAt() { return vipExpiresAt; }
+    public void setVipExpiresAt(LocalDateTime vipExpiresAt) { this.vipExpiresAt = vipExpiresAt; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

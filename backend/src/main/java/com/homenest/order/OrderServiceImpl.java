@@ -21,8 +21,12 @@ import com.homenest.common.PageResponse;
 import com.homenest.exception.AccessDeniedException;
 import com.homenest.exception.InsufficientStockException;
 import com.homenest.exception.ResourceNotFoundException;
+import com.homenest.payment.BankCard;
+import com.homenest.payment.CardPaymentService;
 import com.homenest.promotion.Promotion;
 import com.homenest.promotion.PromotionRepository;
+import com.homenest.promotion.UserVoucher;
+import com.homenest.promotion.UserVoucherRepository;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -30,18 +34,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
+    private final UserVoucherRepository userVoucherRepository;
     private final UserRepository userRepository;
+    private final CardPaymentService cardPaymentService;
     private final SecureRandom random = new SecureRandom();
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
             ProductRepository productRepository,
             PromotionRepository promotionRepository,
-            UserRepository userRepository) {
+            UserVoucherRepository userVoucherRepository,
+            UserRepository userRepository,
+            CardPaymentService cardPaymentService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.promotionRepository = promotionRepository;
+        this.userVoucherRepository = userVoucherRepository;
         this.userRepository = userRepository;
+        this.cardPaymentService = cardPaymentService;
     }
 
     @Override
@@ -58,9 +68,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = new Order();
+        User currentUser = null;
         if (authenticatedEmail != null && !authenticatedEmail.trim().isEmpty()) {
-            userRepository.findByEmail(authenticatedEmail.trim().toLowerCase())
-                    .ifPresent(user -> order.setUserId(user.getId()));
+            currentUser = userRepository.findByEmail(authenticatedEmail.trim().toLowerCase()).orElse(null);
+            if (currentUser != null) {
+                order.setUserId(currentUser.getId());
+            }
         }
 
         order.setCustomerName(request.getCustomerName().trim());
@@ -123,8 +136,12 @@ public class OrderServiceImpl implements OrderService {
 
         order.setSubtotalAmount(subtotal);
 
-        // Calculate promotion discount
-        long discountAmount = 0L;
+        // Generate unique order number first so it can be linked to UserVoucher usage
+        String generatedOrderNumber = generateOrderNumber();
+        order.setOrderNumber(generatedOrderNumber);
+
+        // 1. Calculate voucher discount (and mark claimed voucher as USED)
+        long voucherDiscountAmount = 0L;
         if (request.getCouponCode() != null && !request.getCouponCode().trim().isEmpty()) {
             String code = request.getCouponCode().trim();
             Optional<Promotion> promoOpt = promotionRepository.findByCodeIgnoreCaseAndIsActiveTrue(code);
@@ -132,23 +149,102 @@ public class OrderServiceImpl implements OrderService {
                 Promotion promo = promoOpt.get();
                 LocalDateTime now = LocalDateTime.now();
                 if (now.isAfter(promo.getStartTime()) && now.isBefore(promo.getEndTime())) {
+                    long minOrder = promo.getMinOrderAmount() != null ? promo.getMinOrderAmount() : 0L;
+                    if (minOrder > 0 && subtotal < minOrder) {
+                        throw new IllegalArgumentException(
+                                "Đơn hàng chưa đạt giá trị tối thiểu (" + minOrder + "đ) để áp dụng mã voucher " + promo.getCode() + "."
+                        );
+                    }
+
+                    if (Boolean.TRUE.equals(promo.getVipOnly())) {
+                        if (currentUser == null || !currentUser.hasActiveVip()) {
+                            throw new IllegalArgumentException(
+                                    "Mã voucher " + promo.getCode() + " chỉ dành riêng cho Hội viên VIP đang hoạt động."
+                            );
+                        }
+                    }
+
+                    if (currentUser != null) {
+                        Optional<UserVoucher> uvOpt = userVoucherRepository.findByUserIdAndPromotionId(
+                                currentUser.getId(),
+                                promo.getId()
+                        );
+                        if (uvOpt.isEmpty() && Boolean.TRUE.equals(promo.getRequiresClaim())) {
+                            throw new IllegalArgumentException(
+                                    "Bạn chưa lưu mã " + promo.getCode() + " vào Kho Voucher cá nhân. Vui lòng bấm 'Lưu Voucher' trước khi sử dụng!"
+                            );
+                        }
+                        if (uvOpt.isPresent()) {
+                            UserVoucher uv = uvOpt.get();
+                            if ("USED".equalsIgnoreCase(uv.getStatus())) {
+                                throw new IllegalArgumentException(
+                                        "Bạn đã sử dụng mã voucher " + promo.getCode() + " ở đơn hàng trước đó."
+                                );
+                            }
+                            uv.setStatus("USED");
+                            uv.setUsedAt(now);
+                            uv.setOrderNumber(generatedOrderNumber);
+                            userVoucherRepository.save(uv);
+                        }
+                    } else if (Boolean.TRUE.equals(promo.getRequiresClaim())) {
+                        throw new IllegalArgumentException(
+                                "Vui lòng đăng nhập và lưu mã voucher " + promo.getCode() + " vào Kho Voucher để sử dụng."
+                        );
+                    }
+
                     long calculatedDiscount = (subtotal * promo.getDiscountPercent()) / 100L;
                     if (promo.getMaxDiscountAmount() != null && calculatedDiscount > promo.getMaxDiscountAmount()) {
                         calculatedDiscount = promo.getMaxDiscountAmount();
                     }
-                    discountAmount = calculatedDiscount;
+                    voucherDiscountAmount = calculatedDiscount;
                     order.setCouponCode(promo.getCode());
+
+                    int used = promo.getUsedQuantity() != null ? promo.getUsedQuantity() : 0;
+                    promo.setUsedQuantity(used + 1);
+                    promotionRepository.save(promo);
                 }
             }
         }
 
+        // 2. Calculate stacked VIP membership direct discount (applied on amount after voucher discount)
+        long vipDiscountAmount = 0L;
+        if (currentUser != null && currentUser.hasActiveVip()) {
+            long afterVoucher = Math.max(0L, subtotal - voucherDiscountAmount);
+            int vipPercent = currentUser.getActiveVipDiscountPercent();
+            long vipMax = currentUser.getActiveVipMaxDiscount();
+            long calcVip = (afterVoucher * vipPercent) / 100L;
+            if (vipMax > 0 && calcVip > vipMax) {
+                calcVip = vipMax;
+            }
+            vipDiscountAmount = calcVip;
+            order.setVipTierApplied(currentUser.getVipTier());
+        }
+
+        long discountAmount = voucherDiscountAmount + vipDiscountAmount;
+        order.setVoucherDiscountAmount(voucherDiscountAmount);
+        order.setVipDiscountAmount(vipDiscountAmount);
         order.setDiscountAmount(discountAmount);
         order.setShippingFee(0L); // Free nationwide shipping
         long totalAmount = Math.max(0L, subtotal - discountAmount);
         order.setTotalAmount(totalAmount);
 
-        // Generate unique order number
-        order.setOrderNumber(generateOrderNumber());
+        if (order.getPaymentMethod() == PaymentMethod.BANK_CARD) {
+            if (currentUser == null) {
+                throw new AccessDeniedException("Vui lòng đăng nhập để thanh toán bằng thẻ ngân hàng đã liên kết.");
+            }
+            BankCard paidCard = cardPaymentService.charge(
+                    currentUser,
+                    request.getBankCardId(),
+                    request.getCardCvv(),
+                    totalAmount,
+                    "ORDER_PAYMENT",
+                    "Thanh toán đơn hàng " + generatedOrderNumber,
+                    generatedOrderNumber
+            );
+            order.setPaymentStatus(PaymentStatus.PAID);
+            order.setBankCardId(paidCard.getId());
+            order.setCardMasked(paidCard.getBankName() + " " + paidCard.getCardNumberMasked());
+        }
 
         Order savedOrder = orderRepository.save(order);
         return mapToDTO(savedOrder);
@@ -252,8 +348,37 @@ public class OrderServiceImpl implements OrderService {
         restockOrderItems(order);
 
         LocalDateTime now = LocalDateTime.now();
+
+        // Automatically restore claimed voucher to user's wallet if order had a coupon and promo is still unexpired
+        if (order.getUserId() != null && order.getCouponCode() != null && !order.getCouponCode().isBlank()) {
+            userVoucherRepository.findByUserIdAndPromotionCodeIgnoreCase(order.getUserId(), order.getCouponCode())
+                    .ifPresent(uv -> {
+                        if ("USED".equalsIgnoreCase(uv.getStatus())) {
+                            Promotion promo = uv.getPromotion();
+                            boolean unexpired = promo.getEndTime() == null || promo.getEndTime().isAfter(now);
+                            uv.setStatus(unexpired ? "AVAILABLE" : "EXPIRED");
+                            uv.setUsedAt(null);
+                            uv.setOrderNumber(null);
+                            userVoucherRepository.save(uv);
+
+                            if (promo.getUsedQuantity() != null && promo.getUsedQuantity() > 0) {
+                                promo.setUsedQuantity(promo.getUsedQuantity() - 1);
+                                promotionRepository.save(promo);
+                            }
+                        }
+                    });
+        }
+
         order.setOrderStatus(OrderStatus.CANCELLED);
         if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            if (order.getPaymentMethod() == PaymentMethod.BANK_CARD && order.getBankCardId() != null) {
+                cardPaymentService.refund(
+                        order.getBankCardId(),
+                        order.getTotalAmount(),
+                        "Hoàn tiền hủy đơn hàng " + order.getOrderNumber(),
+                        order.getOrderNumber()
+                );
+            }
             order.setPaymentStatus(PaymentStatus.REFUNDED);
         }
         order.setCancelledAt(now);
@@ -380,9 +505,14 @@ public class OrderServiceImpl implements OrderService {
         dto.setNotes(order.getNotes());
         dto.setPaymentMethod(order.getPaymentMethod());
         dto.setPaymentStatus(order.getPaymentStatus());
+        dto.setBankCardId(order.getBankCardId());
+        dto.setCardMasked(order.getCardMasked());
         dto.setOrderStatus(order.getOrderStatus());
         dto.setSubtotalAmount(order.getSubtotalAmount());
         dto.setDiscountAmount(order.getDiscountAmount());
+        dto.setVoucherDiscountAmount(order.getVoucherDiscountAmount() != null ? order.getVoucherDiscountAmount() : order.getDiscountAmount());
+        dto.setVipDiscountAmount(order.getVipDiscountAmount() != null ? order.getVipDiscountAmount() : 0L);
+        dto.setVipTierApplied(order.getVipTierApplied());
         dto.setShippingFee(order.getShippingFee());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setCouponCode(order.getCouponCode());

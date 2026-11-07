@@ -31,13 +31,25 @@ export const CheckoutModal: React.FC = () => {
     setNotes,
     paymentMethod,
     setPaymentMethod,
+    bankCards,
+    selectedCardId,
+    setSelectedCardId,
+    cardCvv,
+    setCardCvv,
+    openWalletCards,
     couponInput,
     setCouponInput,
     isApplyingCoupon,
     couponError,
     appliedCoupon,
+    savedVouchers,
     handleApplyCoupon,
+    handleSelectSavedVoucher,
     handleRemoveCoupon,
+    voucherDiscountAmount,
+    vipDiscountAmount,
+    vipDiscountPercent,
+    vipTierApplied,
     discountAmount,
     finalTotal,
     totalCartPrice,
@@ -144,6 +156,12 @@ export const CheckoutModal: React.FC = () => {
                   <PaymentMethodSelector
                     paymentMethod={paymentMethod}
                     setPaymentMethod={setPaymentMethod}
+                    bankCards={bankCards}
+                    selectedCardId={selectedCardId}
+                    setSelectedCardId={setSelectedCardId}
+                    cardCvv={cardCvv}
+                    setCardCvv={setCardCvv}
+                    openWalletCards={openWalletCards}
                   />
 
                   <VoucherInputSection
@@ -152,7 +170,10 @@ export const CheckoutModal: React.FC = () => {
                     isApplyingCoupon={isApplyingCoupon}
                     couponError={couponError}
                     appliedCoupon={appliedCoupon}
+                    savedVouchers={savedVouchers}
+                    totalCartPrice={totalCartPrice}
                     handleApplyCoupon={handleApplyCoupon}
+                    handleSelectSavedVoucher={handleSelectSavedVoucher}
                     handleRemoveCoupon={handleRemoveCoupon}
                   />
 
@@ -160,6 +181,10 @@ export const CheckoutModal: React.FC = () => {
                     totalCartItems={totalCartItems}
                     totalCartPrice={totalCartPrice}
                     appliedCoupon={appliedCoupon}
+                    voucherDiscountAmount={voucherDiscountAmount}
+                    vipDiscountAmount={vipDiscountAmount}
+                    vipDiscountPercent={vipDiscountPercent}
+                    vipTierApplied={vipTierApplied}
                     discountAmount={discountAmount}
                     finalTotal={finalTotal}
                   />

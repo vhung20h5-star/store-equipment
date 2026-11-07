@@ -13,6 +13,8 @@ import { CheckoutModal } from "@/components/CheckoutModal";
 import { OrderLookupModal } from "@/components/OrderLookupModal";
 import { AdminOrderModal } from "@/components/AdminOrderModal";
 import { AdminProductModal } from "@/components/AdminProductModal";
+import { AdminPromotionModal } from "@/components/AdminPromotionModal";
+import { VoucherWalletModal } from "@/components/VoucherWalletModal";
 import { AuthModal } from "@/components/AuthModal";
 import { ToastContainer } from "@/components/ToastContainer";
 
@@ -56,6 +58,8 @@ export default function IndexPage() {
       <OrderLookupModal />
       <AdminOrderModal />
       <AdminProductModal />
+      <AdminPromotionModal />
+      <VoucherWalletModal />
       <AuthModal />
       <ToastContainer />
     </div>

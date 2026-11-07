@@ -50,7 +50,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.data.content", not(empty())))
-                .andExpect(jsonPath("$.data.totalElements", greaterThanOrEqualTo(10)))
+                .andExpect(jsonPath("$.data.totalElements", greaterThanOrEqualTo(30)))
                 .andExpect(jsonPath("$.data.content[0].name", notNullValue()))
                 .andExpect(jsonPath("$.data.content[0].specs", notNullValue()))
                 .andExpect(jsonPath("$.data.content[0].features", notNullValue()))

@@ -1,11 +1,6 @@
 import React from "react";
 import { Button } from "@heroui/react";
-import {
-  Check,
-  Copy,
-  CreditCard,
-  Banknote,
-} from "lucide-react";
+import { Check, Copy, CreditCard, Banknote, Crown } from "lucide-react";
 
 import { OrderResponse } from "@/types";
 import { formatVNDPrice } from "@/components/checkout/useCheckout";
@@ -27,6 +22,10 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
   handleCopyBankInfo,
   handleClose,
 }) => {
+  const voucherDisc =
+    orderSuccess.voucherDiscountAmount ?? orderSuccess.discountAmount ?? 0;
+  const vipDisc = orderSuccess.vipDiscountAmount ?? 0;
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-center space-y-3">
@@ -96,6 +95,14 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
                 <Banknote className="w-4 h-4 text-emerald-600" />
                 <span>Thanh toán khi nhận hàng (COD)</span>
               </>
+            ) : orderSuccess.paymentMethod === "BANK_CARD" ? (
+              <>
+                <CreditCard className="w-4 h-4 text-amber-500" />
+                <span>
+                  Đã thanh toán qua thẻ{" "}
+                  {orderSuccess.cardMasked || "Ngân hàng"}
+                </span>
+              </>
             ) : (
               <>
                 <CreditCard className="w-4 h-4 text-sky-600" />
@@ -108,10 +115,25 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
               <span>Tạm tính:</span>
               <span>{formatVNDPrice(orderSuccess.subtotalAmount)}</span>
             </div>
-            {orderSuccess.discountAmount > 0 && (
+            {voucherDisc > 0 && (
               <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                <span>Giảm giá ({orderSuccess.couponCode}):</span>
-                <span>-{formatVNDPrice(orderSuccess.discountAmount)}</span>
+                <span>Giảm giá Voucher ({orderSuccess.couponCode}):</span>
+                <span>-{formatVNDPrice(voucherDisc)}</span>
+              </div>
+            )}
+            {vipDisc > 0 && (
+              <div className="flex justify-between text-amber-600 dark:text-amber-400">
+                <span className="inline-flex items-center gap-1">
+                  <Crown className="w-3 h-3" />
+                  <span>
+                    Ưu đãi{" "}
+                    {orderSuccess.vipTierApplied === "VIP_YEARLY"
+                      ? "VIP Năm"
+                      : "VIP Tháng"}
+                    :
+                  </span>
+                </span>
+                <span>-{formatVNDPrice(vipDisc)}</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-sm text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -147,9 +169,7 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-sky-800 dark:text-sky-300">
             <div>
-              <span className="text-sky-600 dark:text-sky-400">
-                Ngân hàng:
-              </span>{" "}
+              <span className="text-sky-600 dark:text-sky-400">Ngân hàng:</span>{" "}
               <span className="font-semibold">
                 Vietcombank (Chi nhánh Sở Giao Dịch)
               </span>
@@ -225,4 +245,3 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({
     </div>
   );
 };
-
